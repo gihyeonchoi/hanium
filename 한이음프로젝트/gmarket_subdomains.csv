@@ -1,0 +1,362 @@
+Domain,Status,Response Code
+http://atsssl.gmarket.co.kr,Connection Error,N/A
+http://frontapi.gmarket.co.kr,Error 400,400
+http://realitem2.gmarket.co.kr,Error 503,503
+http://claim.gmarket.co.kr,Error 403,403
+http://ggbank.gmarket.co.kr,Success,200
+http://bamboo.gmarket.co.kr,Error 403,403
+http://item2.gmarket.co.kr,Error 403,403
+http://mail10.gmarket.co.kr,Connection Error,N/A
+http://ns2.gmarket.co.kr,Timeout,N/A
+http://devmescrow.gmarket.co.kr,Timeout,N/A
+http://massmail33.gmarket.co.kr,Timeout,N/A
+http://www.gclaim.gmarket.co.kr,Connection Error,N/A
+http://netmail10gm.gmarket.co.kr,Timeout,N/A
+http://ns.gmarket.co.kr,Timeout,N/A
+http://netmail42.gmarket.co.kr,Timeout,N/A
+http://fnp.gmarket.co.kr,Error 404,404
+http://realescrow.gmarket.co.kr,Success,200
+http://devenglish.gmarket.co.kr,Timeout,N/A
+http://netmail56.gmarket.co.kr,Timeout,N/A
+http://netmail04gm.gmarket.co.kr,Timeout,N/A
+http://gim.gmarket.co.kr,Error 403,403
+http://netmail05gm.gmarket.co.kr,Timeout,N/A
+http://trust.gmarket.co.kr,Timeout,N/A
+http://netmail34.gmarket.co.kr,Timeout,N/A
+http://dwa.item.gmarket.co.kr,Error 403,403
+http://netmail35.gmarket.co.kr,Timeout,N/A
+http://massmail15.gmarket.co.kr,Timeout,N/A
+http://netmail035gh.gmarket.co.kr,Timeout,N/A
+http://www.massmail21.gmarket.co.kr,Connection Error,N/A
+http://montelena-rcv.gmarket.co.kr,Success,200
+http://netmail11gm.gmarket.co.kr,Timeout,N/A
+http://checkout.gmarket.co.kr,Success,200
+http://category.gmarket.co.kr,Success,200
+http://smilecashweb.gmarket.co.kr,Connection Error,N/A
+http://massmail21.gmarket.co.kr,Error 472,472
+http://dadispapi.gmarket.co.kr,Error 404,404
+http://recruit.gmarket.co.kr,Timeout,N/A
+http://massmail23.gmarket.co.kr,Timeout,N/A
+http://adscriptdev.gmarket.co.kr,Timeout,N/A
+http://gmember.gmarket.co.kr,Success,200
+http://www.diary2.gmarket.co.kr,Connection Error,N/A
+http://clicklog.gmarket.co.kr,Connection Error,N/A
+http://bampic.gmarket.co.kr,Error 403,403
+http://mail7.gmarket.co.kr,Error 472,472
+http://gmapi.gmarket.co.kr,Error 403,403
+http://minishop.gmarket.co.kr,Success,200
+http://realgpromotion.gmarket.co.kr,Success,200
+http://gdimg5.gmarket.co.kr,Success,200
+http://company.gmarket.co.kr,Success,200
+http://goodsimgen.gmarket.co.kr,Success,200
+http://sslgdimg5.gmarket.co.kr,Success,200
+http://apif.gmarket.co.kr,Connection Error,N/A
+http://shop.gmarket.co.kr,Error 403,403
+http://proxy.gmarket.co.kr,Timeout,N/A
+http://signinssl.gmarket.co.kr,Success,200
+http://cb.gmarket.co.kr,Connection Error,N/A
+http://netmail17gm.gmarket.co.kr,Timeout,N/A
+http://memberapi.gmarket.co.kr,Timeout,N/A
+http://netmail033gh.gmarket.co.kr,Timeout,N/A
+http://netmail55.gmarket.co.kr,Timeout,N/A
+http://realcategory.gmarket.co.kr,Success,200
+http://schema.gmarket.co.kr,Connection Error,N/A
+http://massmail34.gmarket.co.kr,Timeout,N/A
+http://miracle.gmarket.co.kr,Connection Error,N/A
+http://retmail.gmarket.co.kr,Timeout,N/A
+http://com.gmarket.co.kr,Timeout,N/A
+http://netmail032gh.gmarket.co.kr,Timeout,N/A
+http://scriptdev.gmarket.co.kr,Timeout,N/A
+http://paycom.gmarket.co.kr,Error 403,403
+http://hanafos.gmarket.co.kr,Timeout,N/A
+http://mail8.gmarket.co.kr,Connection Error,N/A
+http://corners.gmarket.co.kr,Error 403,403
+http://massmail14.gmarket.co.kr,Timeout,N/A
+http://netmail08gm.gmarket.co.kr,Timeout,N/A
+http://ngmktauto024gm.gmarket.co.kr,Timeout,N/A
+http://mairtour2000.gmarket.co.kr,Timeout,N/A
+http://mail.gmarket.co.kr,Timeout,N/A
+http://ngmktauto012gm.gmarket.co.kr,Timeout,N/A
+http://ngmktauto04gm.gmarket.co.kr,Timeout,N/A
+http://mw.gmarket.co.kr,Connection Error,N/A
+http://lottecard.gmarket.co.kr,Error 403,403
+http://bizon.gmarket.co.kr,Error 403,403
+http://mdelivery.gmarket.co.kr,Error 403,403
+http://mescrow.gmarket.co.kr,Success,200
+http://pics.gmarket.co.kr,Success,200
+http://gclaim.gmarket.co.kr,Connection Error,N/A
+http://www.sna.gmarket.co.kr,Connection Error,N/A
+http://engsslimage.gmarket.co.kr,Connection Error,N/A
+http://lotte.gmarket.co.kr,Error 500,500
+http://tourdev.gmarket.co.kr,Timeout,N/A
+http://navershop.gmarket.co.kr,Connection Error,N/A
+http://mhelp.gmarket.co.kr,Success,200
+http://msp.gmarket.co.kr,Connection Error,N/A
+http://www.bluepebble.gmarket.co.kr,Connection Error,N/A
+http://pdsgw.gmarket.co.kr,Error 404,404
+http://realgshop.gmarket.co.kr,Success,200
+http://gsigninssl.gmarket.co.kr,Success,200
+http://uploadcustimg.gmarket.co.kr,Error 403,403
+http://ngmktauto03gm.gmarket.co.kr,Connection Error,N/A
+http://massmail13.gmarket.co.kr,Timeout,N/A
+http://mx2.gmarket.co.kr,Timeout,N/A
+http://dwa.mitem.gmarket.co.kr,Error 403,403
+http://netmail07gm.gmarket.co.kr,Timeout,N/A
+http://gmc.gmarket.co.kr,Success,200
+http://tpldev.gmarket.co.kr,Timeout,N/A
+http://realmobile.gmarket.co.kr,Error 403,403
+http://massmail42.gmarket.co.kr,Timeout,N/A
+http://netmail05.gmarket.co.kr,Timeout,N/A
+http://imgupload.gmarket.co.kr,Error 403,403
+http://airtoure000.gmarket.co.kr,Timeout,N/A
+http://realitem.gmarket.co.kr,Success,200
+http://support.gmarket.co.kr,Timeout,N/A
+http://massmail35.gmarket.co.kr,Timeout,N/A
+http://english.gmarket.co.kr,Connection Error,N/A
+http://cbm.gmarket.co.kr,Connection Error,N/A
+http://gsns.gmarket.co.kr,Connection Error,N/A
+http://link.gmarket.co.kr,Error 403,403
+http://realgmapi.gmarket.co.kr,Error 403,403
+http://netmail16gm.gmarket.co.kr,Timeout,N/A
+http://netmail43.gmarket.co.kr,Timeout,N/A
+http://realgmyg.gmarket.co.kr,Success,200
+http://member2.gmarket.co.kr,Success,200
+http://stylabimg.gmarket.co.kr,Connection Error,N/A
+http://netmail57.gmarket.co.kr,Timeout,N/A
+http://wooricard.gmarket.co.kr,Error 403,403
+http://global.gmarket.co.kr,Success,200
+http://netmail034gh.gmarket.co.kr,Timeout,N/A
+http://realggbank.gmarket.co.kr,Success,200
+http://www.bampic.gmarket.co.kr,Connection Error,N/A
+http://image.gmarket.co.kr,Error 500,500
+http://gep.gmarket.co.kr,Connection Error,N/A
+http://gdimg.gmarket.co.kr,Success,200
+http://gepapi.gmarket.co.kr,Connection Error,N/A
+http://sns.gmarket.co.kr,Connection Error,N/A
+http://ngmktauto02gm.gmarket.co.kr,Timeout,N/A
+http://gevent.gmarket.co.kr,Success,200
+http://hanacard.gmarket.co.kr,Error 403,403
+http://netmail06gm.gmarket.co.kr,Timeout,N/A
+http://netmail15gm.gmarket.co.kr,Timeout,N/A
+http://item.gmarket.co.kr,Error 403,403
+http://sna.gmarket.co.kr,Success,200
+http://massmail41.gmarket.co.kr,Timeout,N/A
+http://cert.gmarket.co.kr,Success,200
+http://netmail58.gmarket.co.kr,Timeout,N/A
+http://netmail03.gmarket.co.kr,Timeout,N/A
+http://receipt.gmarket.co.kr,Error 403,403
+http://www.gmemberssl.gmarket.co.kr,Connection Error,N/A
+http://gepgopm.gmarket.co.kr,Connection Error,N/A
+http://gds.gmarket.co.kr,Success,200
+http://ghotel.gmarket.co.kr,Connection Error,N/A
+http://mtour.gmarket.co.kr,Success,200
+http://www.gmarket.co.kr,Error 403,403
+http://gdimg1.gmarket.co.kr,Success,200
+http://cbmember.gmarket.co.kr,Connection Error,N/A
+http://mail5.gmarket.co.kr,Connection Error,N/A
+http://realwww.gmarket.co.kr,Error 503,503
+http://tour.gmarket.co.kr,Success,200
+http://netmail04.gmarket.co.kr,Timeout,N/A
+http://airjeju.gmarket.co.kr,Success,200
+http://massmail31.gmarket.co.kr,Error 472,472
+http://air.gmarket.co.kr,Success,200
+http://ngmktauto01gm.gmarket.co.kr,Connection Error,N/A
+http://www.gsigninssl.gmarket.co.kr,Connection Error,N/A
+http://chatc.gmarket.co.kr,Connection Error,N/A
+http://greward.gmarket.co.kr,Error 403,403
+http://mdev.gmarket.co.kr,Connection Error,N/A
+http://hyundaicard.gmarket.co.kr,Error 403,403
+http://massmail22.gmarket.co.kr,Timeout,N/A
+http://netmail33.gmarket.co.kr,Timeout,N/A
+http://diary2.gmarket.co.kr,Success,200
+http://spweb.gmarket.co.kr,Timeout,N/A
+http://realgsigninssl.gmarket.co.kr,Success,200
+http://realevent.gmarket.co.kr,Error 403,403
+http://adscript.gmarket.co.kr,Connection Error,N/A
+http://realsearch.gmarket.co.kr,Error 403,403
+http://housing.gmarket.co.kr,Error 404,404
+http://realmgmyg.gmarket.co.kr,Success,200
+http://mitem.gmarket.co.kr,Error 403,403
+http://netmail01.gmarket.co.kr,Error 472,472
+http://hyeorg.gmarket.co.kr,Error 404,404
+http://gtour.gmarket.co.kr,Success,200
+http://gsnsssl.gmarket.co.kr,Connection Error,N/A
+http://massmail32.gmarket.co.kr,Timeout,N/A
+http://gdimg3en.gmarket.co.kr,Success,200
+http://cbenglish.gmarket.co.kr,Connection Error,N/A
+http://everitem.gmarket.co.kr,Connection Error,N/A
+http://ebayshapi.gmarket.co.kr,Timeout,N/A
+http://cbgsm.gmarket.co.kr,Connection Error,N/A
+http://adgate.gmarket.co.kr,Success,200
+http://impssllog.gmarket.co.kr,Timeout,N/A
+http://browse.gmarket.co.kr,Error 403,403
+http://netmail036gh.gmarket.co.kr,Timeout,N/A
+http://member.gmarket.co.kr,Success,200
+http://mcrex.gmarket.co.kr,Success,200
+http://netmail02gm.gmarket.co.kr,Timeout,N/A
+http://autodiscover.gmarket.co.kr,Success,200
+http://notice.gmarket.co.kr,Connection Error,N/A
+http://realpromotion.gmarket.co.kr,Error 403,403
+http://gsm.gmarket.co.kr,Success,200
+http://gsignin.gmarket.co.kr,Success,200
+http://smilebox.gmarket.co.kr,Connection Error,N/A
+http://sslescrow.gmarket.co.kr,Connection Error,N/A
+http://talk.gmarket.co.kr,Success,200
+http://cart.gmarket.co.kr,Success,200
+http://netmail01gm.gmarket.co.kr,Error 472,472
+http://kebgacard.gmarket.co.kr,Error 403,403
+http://realmitem.gmarket.co.kr,Success,200
+http://gbank.gmarket.co.kr,Success,200
+http://mgmyg.gmarket.co.kr,Success,200
+http://netmail02.gmarket.co.kr,Error 472,472
+http://pluscard.gmarket.co.kr,Error 403,403
+http://dwa.www.gmarket.co.kr,Error 403,403
+http://zeromargin.gmarket.co.kr,Connection Error,N/A
+http://event.gmarket.co.kr,Error 403,403
+http://realglobal.gmarket.co.kr,Success,200
+http://ngmktauto05gm.gmarket.co.kr,Timeout,N/A
+http://realmember2.gmarket.co.kr,Success,200
+http://club.gmarket.co.kr,Success,200
+http://gshop.gmarket.co.kr,Success,200
+http://gmapissl.gmarket.co.kr,Error 403,403
+http://uiscript.gmarket.co.kr,Connection Error,N/A
+http://adcenter.gmarket.co.kr,Connection Error,N/A
+http://gwms2.gmarket.co.kr,Connection Error,N/A
+http://help.gmarket.co.kr,Success,200
+http://promotion.gmarket.co.kr,Error 403,403
+http://ns1gm.gmarket.co.kr,Timeout,N/A
+http://tour-dev.gmarket.co.kr,Timeout,N/A
+http://stimage.gmarket.co.kr,Connection Error,N/A
+http://discount.gmarket.co.kr,Connection Error,N/A
+http://gtour2000.gmarket.co.kr,Timeout,N/A
+http://massmail51.gmarket.co.kr,Timeout,N/A
+http://mobile.gmarket.co.kr,Error 403,403
+http://massmail25.gmarket.co.kr,Timeout,N/A
+http://searchapi.gmarket.co.kr,Connection Error,N/A
+http://www.miracle.gmarket.co.kr,Connection Error,N/A
+http://search.gmarket.co.kr,Error 403,403
+http://sslimage.gmarket.co.kr,Error 500,500
+http://gpromotion.gmarket.co.kr,Success,200
+http://remote.gmarket.co.kr,Timeout,N/A
+http://pluszone.gmarket.co.kr,Success,200
+http://realgsignin.gmarket.co.kr,Success,200
+http://smileclub.gmarket.co.kr,Success,200
+http://netmail039gh.gmarket.co.kr,Timeout,N/A
+http://utsssl.gmarket.co.kr,Error 404,404
+http://images.gmarket.co.kr,Connection Error,N/A
+http://glaggr.gmarket.co.kr,Error 404,404
+http://ngmktauto022gm.gmarket.co.kr,Timeout,N/A
+http://realmescrow.gmarket.co.kr,Success,200
+http://gen.gmarket.co.kr,Connection Error,N/A
+http://gmyg.gmarket.co.kr,Success,200
+http://sslgdimg3.gmarket.co.kr,Success,200
+http://img.gmarket.co.kr,Connection Error,N/A
+http://utsgw.gmarket.co.kr,Error 404,404
+http://netmail037gh.gmarket.co.kr,Timeout,N/A
+http://netmail51.gmarket.co.kr,Timeout,N/A
+http://airdev.gmarket.co.kr,Timeout,N/A
+http://link-ecoupon.gmarket.co.kr,Timeout,N/A
+http://massmail12.gmarket.co.kr,Timeout,N/A
+http://netmail03gm.gmarket.co.kr,Timeout,N/A
+http://netmail41.gmarket.co.kr,Connection Error,N/A
+http://sslmember2.gmarket.co.kr,Timeout,N/A
+http://netmail52.gmarket.co.kr,Timeout,N/A
+http://ngmktauto06gm.gmarket.co.kr,Timeout,N/A
+http://my.gmarket.co.kr,Success,200
+http://elsa-fe.gmarket.co.kr,Success,200
+http://alim.gmarket.co.kr,Success,200
+http://goodsimg.gmarket.co.kr,Success,200
+http://sslgoodsimg.gmarket.co.kr,Success,200
+http://carsdaq.gmarket.co.kr,Error 403,403
+http://massmail52.gmarket.co.kr,Timeout,N/A
+http://mmyg.gmarket.co.kr,Success,200
+http://netmail54.gmarket.co.kr,Timeout,N/A
+http://netmail14gm.gmarket.co.kr,Timeout,N/A
+http://sslgdimg4.gmarket.co.kr,Success,200
+http://netmail18gm.gmarket.co.kr,Timeout,N/A
+http://gcorner.gmarket.co.kr,Success,200
+http://utsdev.gmarket.co.kr,Timeout,N/A
+http://gmemberssl.gmarket.co.kr,Timeout,N/A
+http://pds.gmarket.co.kr,Success,200
+http://uts.gmarket.co.kr,Error 404,404
+http://englishalt.gmarket.co.kr,Connection Error,N/A
+http://ewms01.gmarket.co.kr,Connection Error,N/A
+http://mtwelve.gmarket.co.kr,Connection Error,N/A
+http://ngmktauto014gm.gmarket.co.kr,Timeout,N/A
+http://massmail24.gmarket.co.kr,Timeout,N/A
+http://ticketevent.gmarket.co.kr,Connection Error,N/A
+http://gcategory.gmarket.co.kr,Success,200
+http://www.mescrow.gmarket.co.kr,Connection Error,N/A
+http://ewms02.gmarket.co.kr,Connection Error,N/A
+http://ats.gmarket.co.kr,Error 404,404
+http://lottehome.gmarket.co.kr,Error 500,500
+http://pdsssl.gmarket.co.kr,Success,200
+http://gdimg3.gmarket.co.kr,Success,200
+http://gms.gmarket.co.kr,Connection Error,N/A
+http://airmode.gmarket.co.kr,Connection Error,N/A
+http://netmail09gm.gmarket.co.kr,Timeout,N/A
+http://signin.gmarket.co.kr,Success,200
+http://mmygdev.gmarket.co.kr,Connection Error,N/A
+http://ebaydev.gmarket.co.kr,Timeout,N/A
+http://home2.gmarket.co.kr,Success,200
+http://partnerapi.gmarket.co.kr,Error 403,403
+http://gdimg4.gmarket.co.kr,Success,200
+http://shinhancard.gmarket.co.kr,Error 403,403
+http://realmg.gmarket.co.kr,Success,200
+http://netmail038gh.gmarket.co.kr,Timeout,N/A
+http://www.gsm.gmarket.co.kr,Connection Error,N/A
+http://gtouchpay.gmarket.co.kr,Connection Error,N/A
+http://gwms.gmarket.co.kr,Connection Error,N/A
+http://realmyg.gmarket.co.kr,Success,200
+http://eventnet.gmarket.co.kr,Success,200
+http://mail9.gmarket.co.kr,Connection Error,N/A
+http://greceipt.gmarket.co.kr,Error 403,403
+http://mair.gmarket.co.kr,Success,200
+http://gi.gmarket.co.kr,Error 403,403
+http://picsdev.gmarket.co.kr,Timeout,N/A
+http://ticketnotice.gmarket.co.kr,Connection Error,N/A
+http://netmail53.gmarket.co.kr,Timeout,N/A
+http://fr.gmarket.co.kr,Timeout,N/A
+http://mx1.gmarket.co.kr,Timeout,N/A
+http://spacegate.gmarket.co.kr,Error 403,403
+http://escrow.gmarket.co.kr,Success,200
+http://gift.gmarket.co.kr,Success,200
+http://mobilecom.gmarket.co.kr,Connection Error,N/A
+http://montelena.gmarket.co.kr,Error 404,404
+http://ticket.gmarket.co.kr,Success,200
+http://tpm.gmarket.co.kr,Connection Error,N/A
+http://ngmktauto023gm.gmarket.co.kr,Timeout,N/A
+http://netmail31.gmarket.co.kr,Error 472,472
+http://fbapp.gmarket.co.kr,Connection Error,N/A
+http://rpppre.gmarket.co.kr,Timeout,N/A
+http://glrpp.gmarket.co.kr,Success,200
+http://netmail031gh.gmarket.co.kr,Timeout,N/A
+http://ecoupon.gmarket.co.kr,Connection Error,N/A
+http://ebay.gmarket.co.kr,Success,200
+http://bluepebble.gmarket.co.kr,Connection Error,N/A
+http://mail6.gmarket.co.kr,Error 472,472
+http://shipapi.gmarket.co.kr,Connection Error,N/A
+http://dwa.m.gmarket.co.kr,Error 403,403
+http://massmail11.gmarket.co.kr,Timeout,N/A
+http://mg.gmarket.co.kr,Success,200
+http://dev.gmarket.co.kr,Timeout,N/A
+http://m.gmarket.co.kr,Error 403,403
+http://realscript.gmarket.co.kr,Error 403,403
+http://rpp.gmarket.co.kr,Success,200
+http://sslgdimg1.gmarket.co.kr,Success,200
+http://gsearch.gmarket.co.kr,Success,200
+http://script.gmarket.co.kr,Error 403,403
+http://gmapi.gmarkei.gmarket.co.kr,Connection Error,N/A
+http://realsna.gmarket.co.kr,Error 403,403
+http://netmail32.gmarket.co.kr,Timeout,N/A
+http://ngmktauto013gm.gmarket.co.kr,Timeout,N/A
+http://airlotte.gmarket.co.kr,Success,200
+http://myg.gmarket.co.kr,Success,200
+http://admin.gmarket.co.kr,Timeout,N/A
+http://devspweb.gmarket.co.kr,Timeout,N/A
+http://netmail12gm.gmarket.co.kr,Timeout,N/A
+http://realgmemberssl.gmarket.co.kr,Timeout,N/A
+http://netmail13gm.gmarket.co.kr,Timeout,N/A
+http://netmail44.gmarket.co.kr,Timeout,N/A
+http://ngmktauto011gm.gmarket.co.kr,Timeout,N/A
+http://tpl.gmarket.co.kr,Timeout,N/A
