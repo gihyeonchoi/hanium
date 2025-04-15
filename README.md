@@ -10,3 +10,5 @@ pip install geoip2
 pip install requests
 pip install certifi
 pip install python-whois
+
+https://www.maxmind.com/

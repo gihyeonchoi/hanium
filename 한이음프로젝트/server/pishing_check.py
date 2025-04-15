@@ -21,7 +21,7 @@ def URL_check(url):
     '''
     URL을 받아 도메인 DB와 대조. Bool 리턴. URL은 String 으로
     '''
-    f = open('./domains_data/all_subdomains_response.csv', 'r', encoding = 'utf-8')
+    f = open('../domains_data/all_subdomains_response.csv', 'r', encoding = 'utf-8')
     rdr = csv.reader(f)
 
     parsed_url = urlparse(url)
@@ -117,7 +117,7 @@ def Location_to_IP(url):
         print("ISO 코드:", iso_code)
 
         # 한글 국가명 매핑
-        country_dict = load_country_dict('ISO_code.csv')
+        country_dict = load_country_dict('../ISO_code.csv')
         korean_name = country_dict.get(iso_code, "알 수 없음")
         print("국가명 (한글):", korean_name)
         return True, korean_name
