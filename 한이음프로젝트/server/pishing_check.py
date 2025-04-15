@@ -15,7 +15,8 @@ def URL_parsing(text):
     url_pattern = r'https?://[^\s]+'
     url = re.findall(url_pattern, text)
 
-    return url
+    return url if url else None
+
 
 def URL_check(url):
     '''

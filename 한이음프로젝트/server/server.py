@@ -12,7 +12,7 @@ def search():
     query = request.args.get('query', '')
     urls = URL_parsing(query)
     results = []
-
+    print(urls)
     for url in urls:
         result = {'url': url, 'progress': []}
 

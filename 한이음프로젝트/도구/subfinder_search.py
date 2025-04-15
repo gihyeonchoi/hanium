@@ -1,3 +1,8 @@
+
+# =============================================================================
+# 함수 domain_search()
+# CSV 파일 경로에 있는 URL을 자동으로 subfinder에 넣고 실행
+# =============================================================================
 def domain_search():
     import csv
     import subprocess
@@ -26,14 +31,14 @@ def domain_search():
                 name = row['사이트이름'].strip()
                 executor.submit(run_subfinder, url, name)
 
-domain_search()
+# domain_search()
 
 #############################
 
 def txt_file_merge():
     import os
     # 합칠 파일들이 있는 폴더 경로
-    folder_path = r"C:\Users\user07\Desktop\hanium\한이음프로젝트\domains_data"
+    folder_path = r"../domains_data"
     
     # 결과 파일 이름 (원하는 대로 수정 가능)
     output_file = os.path.join(folder_path, "all_subdomains.txt")
@@ -57,3 +62,6 @@ def txt_file_merge():
             out_file.write(line + "\n")
     
     print(f"✅ {len(all_lines)}개의 도메인을 '{output_file}'에 저장했습니다.")
+    
+
+txt_file_merge()

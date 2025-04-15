@@ -10,5 +10,6 @@ pip install geoip2
 pip install requests
 pip install certifi
 pip install python-whois
+pip install flask
 
 https://www.maxmind.com/
