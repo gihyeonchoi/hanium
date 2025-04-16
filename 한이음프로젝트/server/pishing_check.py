@@ -3,8 +3,6 @@
 # import sys
 # sys.executable
 import csv
-# from geoip import geolite2 # pip install python-geoip-python3
-# https://pythonhosted.org/python-geoip/
 from urllib.parse import urlparse
 
 def URL_parsing(text):
@@ -15,7 +13,7 @@ def URL_parsing(text):
     url_pattern = r'https?://[^\s]+'
     url = re.findall(url_pattern, text)
 
-    return url if url else None
+    return url if url else []
 
 
 def URL_check(url):
