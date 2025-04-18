@@ -1,40 +1,47 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, Response
 from pishing_check import URL_parsing, URL_check, SSL_check, Domain_check, Location_to_IP
+import json
+import time
 
 app = Flask(__name__)
 
 @app.route('/')
-def search_form():
+def index():
     return render_template('index.html')
 
-@app.route('/search', methods=['GET'])
-def search():
+@app.route('/analyze')
+def analyze():
     query = request.args.get('query', '')
     urls = URL_parsing(query)
-    results = []
-    print(urls)
-    for url in urls:
-        result = {'url': url, 'progress': []}
 
-        # URL Check
-        url_check_result = URL_check(url)
-        result['progress'].append({'step': 'URL Check', 'result': url_check_result})
+    def generate():
+        yield f'data: {json.dumps({"type": "total", "total": len(urls)})}\n\n'
+        for url in urls:
+            yield f'data: {json.dumps({"type": "progress", "message": f"URL 검사 중... ({url})"})}\n\n'
+            url_check = URL_check(url)
+            yield f'data: {json.dumps({"type": "progress", "message": "✅ URL 대조 완료"})}\n\n'
+            time.sleep(0.1)
 
-        # SSL Check
-        ssl_check_result = SSL_check(url)
-        result['progress'].append({'step': 'SSL Check', 'result': ssl_check_result})
+            ssl_check = SSL_check(url)
+            yield f'data: {json.dumps({"type": "progress", "message": "✅ SSL 인증서 검사 완료"})}\n\n'
+            time.sleep(0.1)
 
-        # Domain Check
-        domain_age = Domain_check(url)
-        result['progress'].append({'step': 'Domain Check', 'result': domain_age})
+            domain_days = Domain_check(url)
+            yield f'data: {json.dumps({"type": "progress", "message": "✅ 도메인 생성일 확인 완료"})}\n\n'
+            time.sleep(0.1)
 
-        # Location to IP
-        location_result = Location_to_IP(url)
-        result['progress'].append({'step': 'Location Check', 'result': location_result})
+            location_ok, country = Location_to_IP(url)
+            yield f'data: {json.dumps({"type": "progress", "message": "✅ IP 위치 확인 완료"})}\n\n'
+            time.sleep(0.1)
 
-        results.append(result)
+            # 최종 결과 전송
+            yield f'data: {json.dumps({"type": "result", "url": url, "url_check": url_check, "ssl_check": ssl_check, "domain_check": domain_days, "location_check": country})}\n\n'
+            print("-----------------------------------------------------")
 
-    return jsonify(results)
+        # 모든 URL 검사 완료
+        yield f'data: {json.dumps({"type": "done"})}\n\n'
+
+    return Response(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
     app.run(debug=True)
