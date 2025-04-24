@@ -4,3 +4,6 @@ Timestamp,URL,URL_Check,SSL_Check,Domain_Days,Country
 2025-04-22 11:38:39,https://cafe.navereldie.com/order/84235794,False,1,10,미국
 2025-04-22 11:41:12,https://cafe.naver.com/joonggonara/1103134944,True,1,10084,대한민국
 2025-04-24 08:19:02,https://github.com/,False,1,6406,미국
+2025-04-24 14:02:20,https://opentutorials.org/,False,1,5208,미국
+2025-04-24 14:06:40,https://naver.com,True,1,10086,대한민국
+2025-04-24 14:32:57,https://google.com,False,1,10083,미국

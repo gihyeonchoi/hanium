@@ -4,525 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>피싱 사이트 검사</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-        
-        body {
-            background-color: #f9f9f9;
-            color: #333;
-            line-height: 1.6;
-            padding: 40px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            font-size: 28px;
-            font-weight: 500;
-            margin-bottom: 40px;
-            text-align: center;
-            color: #1a73e8;
-        }
-        
-        #searchForm {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        
-        #queryInput {
-            width: 100%;
-            max-width: 600px;
-            padding: 16px 20px;
-            font-size: 16px;
-            border: 1px solid #dfe1e5;
-            border-radius: 24px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.1);
-            outline: none;
-            transition: box-shadow 0.3s, border-color 0.3s;
-        }
-        
-        #queryInput:focus {
-            box-shadow: 0 1px 8px rgba(32, 33, 36, 0.2);
-            border-color: #bbb;
-        }
-        
-        button {
-            background-color: #1a73e8;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #0d66d0;
-        }
-        
-        section {
-            width: 100%;
-            margin-bottom: 30px;
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        h2 {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 15px;
-            color: #444;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .progress-container {
-            position: relative;
-            padding-top: 10px;
-        }
-        
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        
-        .url-progress {
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .url-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .url-title {
-            font-weight: 500;
-            color: #1a73e8;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80%;
-        }
-        
-        .progress-steps {
-            margin-left: 15px;
-        }
-        
-        .progress-step {
-            margin-bottom: 6px;
-            padding: 4px 0;
-        }
-        
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 15px;
-            overflow-x: auto;
-            scrollbar-width: thin;
-        }
-        
-        .tab {
-            padding: 10px 16px;
-            color: grey;
-            cursor: pointer;
-            border: none;
-            background: none;
-            border-bottom: 2px solid transparent;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
-            font-size: 14px;
-        }
-        
-        .tab.active {
-            border-bottom: 2px solid #1a73e8;
-            color: #1a73e8;
-            font-weight: 500;
-        }
-        
-        .tab:hover:not(.active) {
-            background: #f5f5f5;
-        }
-        
-        .tab-select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: none;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        td {
-            padding: 12px 8px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-        
-        tr td:first-child {
-            width: 170px;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        tr td:last-child {
-            color: #333;
-        }
-        
-        .status-safe {
-            color: #0c7c59;
-            font-weight: 500;
-        }
-        
-        .status-warning {
-            color: #ff6b00;
-            font-weight: 500;
-        }
-        
-        .status-danger {
-            color: #d23939;
-            font-weight: 500;
-        }
-        
-        .result-container {
-            display: none;
-        }
-        
-        .result-container.active {
-            display: block;
-        }
-        
-        .progress-indicator {
-            height: 4px;
-            background-color: #e6f2ff;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background-color: #1a73e8;
-            width: 0;
-            transition: width 0.3s ease;
-        }
-        
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 24px;
-            }
-            
-            .tabs {
-                display: none;
-            }
-            
-            .tab-select {
-                display: block;
-            }
-            
-            table, tr, td {
-                display: block;
-            }
-            
-            tr {
-                margin-bottom: 12px;
-            }
-            
-            tr td:first-child {
-                width: 100%;
-                padding-bottom: 4px;
-                border-bottom: none;
-            }
-            
-            tr td:last-child {
-                padding-top: 0;
-                padding-left: 16px;
-            }
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/npm/pretendard@1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css" />
 </head>
-<body>
-    <h1>🔍 피싱 사이트 검사</h1>
-    
-    <form id="searchForm">
-        <input type="text" id="queryInput" placeholder="URL 또는 의심스러운 메시지를 입력하세요" required>
-        <button type="submit">검사 시작</button>
-    </form>
 
-    <section>
-        <h2>검사 진행 상황</h2>
-        <div class="progress-container">
-            <div class="progress-info">
-                <span id="current-url-indicator">-</span>
-                <span id="url-count">-</span>
-            </div>
-            <div class="progress-indicator">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div id="progress"></div>
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed py-10 px-5" style="font-family: 'Pretendard Variable', sans-serif;">
+    <div class="flex items-center justify-center gap-4 mb-10">
+        <a href="https://www.kopo.ac.kr/chuncheon/index.do" target="_blank" rel="noopener noreferrer">
+            <img src="../static/chuncheon.png" alt="로고" class="w-30 h-30 object-contain hover:opacity-80 transition-opacity">
+        </a>
+        <h1 class="text-2xl md:text-3xl font-bold text-center text-blue-600">
+            피싱 사이트 검사
+        </h1>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto">
+
+        <!-- 왼쪽: 입력 영역 -->
+        <div class="flex-1 bg-white p-6 rounded-lg shadow">
+            <form id="searchForm" class="flex flex-col gap-4">
+                <label for="queryInput" class="text-sm text-gray-600">검사할 URL 또는 메시지를 입력하세요</label>
+                <textarea id="queryInput"
+                          class="w-full h-40 p-4 border border-gray-300 rounded resize-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 overflow-hidden"
+                          placeholder="예: https://example.com 또는 의심되는 메시지를 붙여넣으세요" required></textarea>
+                <button type="submit"
+                        class="bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition-colors">
+                    검사 시작
+                </button>
+            </form>
         </div>
-    </section>
 
-    <section id="results-section">
-        <h2>검사 결과</h2>
-        <div id="tabs-container">
-            <select id="url-select" class="tab-select"></select>
-            <div id="tabs" class="tabs"></div>
-        </div>
-        <div id="tab-contents"></div>
-    </section>
-
-    <script>
-        const form = document.getElementById('searchForm');
-        const progressDiv = document.getElementById('progress');
-        const tabsDiv = document.getElementById('tabs');
-        const tabContentsDiv = document.getElementById('tab-contents');
-        const urlSelect = document.getElementById('url-select');
-        const progressBar = document.getElementById('progress-bar');
-        const currentUrlIndicator = document.getElementById('current-url-indicator');
-        const urlCountIndicator = document.getElementById('url-count');
-        
-        let resultsData = [];
-        let activeTab = 0;
-        let totalUrls = 0;
-        let completedUrls = 0;
-        let currentUrlProgressElements = {};
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            resetUI();
-            
-            const query = document.getElementById('queryInput').value;
-            if (!query.trim()) {
-                alert('URL 또는 메시지를 입력해주세요.');
-                return;
-            }
-            
-            // 서버에 쿼리 전송 및 SSE 연결 설정
-            const eventSource = new EventSource(`/analyze?query=${encodeURIComponent(query)}`);
-            let urlIndex = 0;
-            
-            eventSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-
-                if (data.type === 'total') {
-                    totalUrls = data.total; // ✅ totalUrls 값 서버에서 받아 저장
-                    updateProgressBar();    // ✅ 초기 progress bar 설정
-                    return;
-                }
-                
-                if (data.type === 'progress') {
-                    // URL 검사 시작 메시지 감지
-                    if (data.message.startsWith('URL 검사 중...')) {
-                        const url = data.message.match(/\(([^)]+)\)/)[1];
-                        handleNewUrl(url, urlIndex);
-                        urlIndex++;
-                    } else {
-                        // 진행 상황 업데이트
-                        updateProgress(data.message);
-                    }
-                } else if (data.type === 'result') {
-                    // 결과 데이터 저장
-                    resultsData.push(data);
-                    completedUrls++;
-                    updateProgressBar();
-                    
-                    // 결과 탭 생성
-                    createResultTab(data, resultsData.length - 1);
-                    
-                    // 첫 번째 결과가 도착하면 활성화
-                    if (resultsData.length === 1) {
-                        activateTab(0);
-                    }
-                } else if (data.type === 'done') {
-                    // 모든 처리 완료
-                    eventSource.close();
-                    currentUrlIndicator.textContent = '모든 URL 검사 완료';
-                }
-            };
-            
-            eventSource.onerror = function() {
-                eventSource.close();
-                alert('서버 연결 중 오류가 발생했습니다.');
-            };
-        });
-        
-        function resetUI() {
-            progressDiv.innerHTML = '';
-            tabsDiv.innerHTML = '';
-            tabContentsDiv.innerHTML = '';
-            urlSelect.innerHTML = '';
-            progressBar.style.width = '0%';
-            currentUrlIndicator.textContent = '-';
-            urlCountIndicator.textContent = '-';
-            
-            resultsData = [];
-            currentUrlProgressElements = {};
-            totalUrls = 0;
-            completedUrls = 0;
-        }
-        
-        function handleNewUrl(url, index) {
-            // totalUrls++;
-            currentUrlIndicator.textContent = `${index + 1}번째 URL 검사 중...`;
-            urlCountIndicator.textContent = `${completedUrls}/${totalUrls} 완료`;
-            
-            // URL별 진행 상황 컨테이너 생성
-            const urlProgressDiv = document.createElement('div');
-            urlProgressDiv.className = 'url-progress';
-            urlProgressDiv.innerHTML = `
-                <div class="url-header">
-                    <div class="url-title">${index + 1}. ${url}</div>
+        <!-- 오른쪽: 검사 결과 및 진행 상황 -->
+        <div class="flex-1 flex flex-col gap-6">
+            <section class="bg-white p-5 rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2">검사 진행 상황</h2>
+                <div class="relative pt-2">
+                    <div class="flex justify-between mb-2 text-sm">
+                        <span id="current-url-indicator">-</span>
+                        <span id="url-count">-</span>
+                    </div>
+                    <div class="h-1 bg-blue-100 rounded overflow-hidden mb-3">
+                        <div class="h-full bg-blue-600 w-0 transition-all duration-300" id="progress-bar"></div>
+                    </div>
+                    <div id="progress" class="text-sm text-gray-700"></div>
                 </div>
-                <div class="progress-steps" id="progress-steps-${index}"></div>
-            `;
-            progressDiv.appendChild(urlProgressDiv);
-            
-            // 현재 URL의 진행 상황을 표시할 요소 저장
-            currentUrlProgressElements = {
-                steps: document.getElementById(`progress-steps-${index}`),
-                index: index
-            };
-        }
-        
-        function updateProgress(message) {
-            if (!currentUrlProgressElements.steps) return;
-            
-            const stepDiv = document.createElement('div');
-            stepDiv.className = 'progress-step';
-            stepDiv.textContent = message;
-            currentUrlProgressElements.steps.appendChild(stepDiv);
-        }
-        
-        function updateProgressBar() {
-            const progressPercent = (completedUrls / totalUrls) * 100;
-            progressBar.style.width = `${progressPercent}%`;
-            urlCountIndicator.textContent = `${completedUrls}/${totalUrls} 완료`;
-        }
-        
-        function createResultTab(data, index) {
-            // 탭 버튼 생성
-            const tab = document.createElement('button');
-            tab.className = 'tab';
-            tab.textContent = `${index + 1}. ${getTruncatedUrl(data.url)}`;
-            tab.onclick = () => activateTab(index);
-            tabsDiv.appendChild(tab);
-            
-            // 모바일용 드롭다운 옵션 생성
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = `${index + 1}. ${getTruncatedUrl(data.url)}`;
-            urlSelect.appendChild(option);
-            
-            // 탭 콘텐츠 생성
-            const tabContent = document.createElement('div');
-            tabContent.className = 'result-container';
-            tabContent.dataset.index = index;
-            
-            // 상태에 따른 스타일 적용
-            const urlStatus = data.url_check ? 
-                '<span class="status-safe">데이터베이스에 등록된 안전한 도메인입니다.</span>' : 
-                '<span class="status-warning">데이터베이스에 등록되지 않은 도메인입니다.</span>';
-            
-            let sslStatus = '';
-            if (data.ssl_check === 1) {
-                sslStatus = '<span class="status-safe">SSL 인증서가 유효합니다. (HTTPS 연결 정상)</span>';
-            } else if (data.ssl_check === 0) {
-                sslStatus = '<span class="status-danger">SSL 인증서가 유효하지 않습니다.</span>';
-            } else {
-                sslStatus = '<span class="status-warning">HTTP 연결입니다. SSL 인증서가 존재하지 않습니다.</span>';
-            }
-            
-            // 결과 테이블 생성
-            tabContent.innerHTML = `
-                <table>
-                    <tr><td>🔗 검사한 URL</td><td>${data.url}</td></tr>
-                    <tr><td>🗃️ URL 대조 결과</td><td>${urlStatus}</td></tr>
-                    <tr><td>🔐 SSL 인증서</td><td>${sslStatus}</td></tr>
-                    <tr><td>🕒 도메인 생성일</td><td>${
-                        data.domain_check > 0 ? `약 ${data.domain_check}일 전에 생성된 도메인입니다.` : 
-                        "도메인 생성일을 확인할 수 없습니다."
-                    }</td></tr>
-                    <tr><td>🌍 서버 위치</td><td>${
-                        data.location_check && data.location_check !== "알수없음" ?
-                            `${data.location_check}에서 운영되고 있는 서버입니다.` :
-                            "국가 정보를 확인할 수 없습니다."
-                    }</td></tr>
-                </table>
-            `;
-            
-            tabContentsDiv.appendChild(tabContent);
-        }
-        
-        function activateTab(index) {
-            // 활성 탭 업데이트
-            activeTab = index;
-            
-            // 탭 버튼 상태 업데이트
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach((tab, i) => {
-                if (i === index) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            // 드롭다운 선택 업데이트
-            urlSelect.value = index;
-            
-            // 활성 콘텐츠 표시
-            const contents = document.querySelectorAll('.result-container');
-            contents.forEach(content => {
-                if (parseInt(content.dataset.index) === index) {
-                    content.classList.add('active');
-                } else {
-                    content.classList.remove('active');
-                }
-            });
-        }
-        
-        // 모바일 드롭다운 변경 처리
-        urlSelect.addEventListener('change', function() {
-            activateTab(parseInt(this.value));
-        });
-        
-        function getTruncatedUrl(url) {
-            try {
-                const urlObj = new URL(url);
-                return urlObj.hostname;
-            } catch (e) {
-                // URL 파싱 실패 시 간단히 잘라냄
-                return url.length > 30 ? url.substring(0, 27) + '...' : url;
-            }
-        }
-    </script>
+            </section>
+
+            <section id="results-section" class="bg-white p-5 rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2">검사 결과</h2>
+                <div id="tabs-container">
+                    <select id="url-select" class="w-full p-2 mb-4 border border-gray-300 rounded hidden md:hidden"></select>
+                    <div id="tabs" class="flex border-b border-gray-300 mb-4 overflow-x-auto scrollbar-thin"></div>
+                </div>
+                <div id="tab-contents"></div>
+            </section>
+        </div>
+
+    </div>
+
+    <script src="../static/script.js"></script>
 </body>
+
+
 </html>
