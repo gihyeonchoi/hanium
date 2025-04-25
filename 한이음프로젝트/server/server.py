@@ -16,6 +16,7 @@ def analyze():
     query = request.args.get('query', '')
     urls = URL_parsing(query)
     log_file_path = "server_log.csv"
+    client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     
     # CSV 파일 열기 (없으면 새로 생성)
     def open_csv():
@@ -37,7 +38,7 @@ def analyze():
             existing_rows = open_csv()
             if len(existing_rows) == 0:
                 # 파일이 비어있는 경우 첫 번째 데이터 전송 전에 헤더 추가
-                writer.writerow(['Timestamp', 'URL', 'URL_Check', 'SSL_Check', 'Domain_Days', 'Country'])
+                writer.writerow(['Timestamp', 'IP', 'URL', 'URL_Check', 'SSL_Check', 'Domain_Days', 'Country'])
 
             yield f'data: {json.dumps({"type": "total", "total": len(urls)})}\n\n'
             for url in urls:
@@ -60,7 +61,7 @@ def analyze():
                 time.sleep(0.1)
 
                 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                log_message = [timestamp, url, url_check, ssl_check, domain_days, country]
+                log_message = [timestamp, client_ip, url, url_check, ssl_check, domain_days, country]
                 
                 # CSV에 로그 기록
                 writer.writerow(log_message)
