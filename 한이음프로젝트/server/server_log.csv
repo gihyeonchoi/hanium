@@ -7,3 +7,7 @@ Timestamp,URL,URL_Check,SSL_Check,Domain_Days,Country
 2025-04-24 14:02:20,https://opentutorials.org/,False,1,5208,미국
 2025-04-24 14:06:40,https://naver.com,True,1,10086,대한민국
 2025-04-24 14:32:57,https://google.com,False,1,10083,미국
+2025-04-25 08:21:04,https://new-m.pay.naver.com/,False,1,10087,대한민국
+2025-04-25 08:24:14,https://new-m.pay.naver.com/,False,1,10087,대한민국
+2025-04-25 08:25:11,https://new-m.pay.naver.com/,False,1,10087,대한민국
+2025-04-25 08:26:43,https://m.bunjang.co.kr/,True,1,4780,미국
