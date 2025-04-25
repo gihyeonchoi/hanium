@@ -1,3 +1,5 @@
 Timestamp,IP,URL,URL_Check,SSL_Check,Domain_Days,Country
 2025-04-25 09:31:22,127.0.0.1,https://cafe.naver.com/polysw2024?iframe_url_utf8=%2FArticleRead.nhn%253Fclubid%3D31169584%2526articleid%3D223%2526referrerAllArticles%3Dtrue,True,1,10087,대한민국
 2025-04-25 09:31:54,127.0.0.1,https://m.bunjang.co.kr/,True,1,4780,미국
+2025-04-25 11:47:44,127.0.0.1,https://www.naver.com,True,1,10087,대한민국
+2025-04-25 11:48:07,127.0.0.1,https://web.joongna.com/,True,1,3529,미국

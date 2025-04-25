@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>피싱 사이트 검사</title>
+    <title>안심링크 | Ansim Link</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../static/style.css">
     <link rel="stylesheet" as="style" crossorigin
@@ -12,20 +12,17 @@
 </head>
 
 <body class="bg-gray-50 text-gray-800 font-sans leading-relaxed py-10 px-5" style="font-family: 'Pretendard Variable', sans-serif;">
-    <div class="flex items-end justify-center gap-4 mb-10">
-        <a href="https://www.kopo.ac.kr/chuncheon/index.do" target="_blank" rel="noopener noreferrer">
-            <img src="../static/chuncheon.png" alt="로고" class="w-40 h-12 object-contain hover:opacity-80 transition-opacity">
-        </a>
-        <h1 class="text-2xl md:text-4xl font-bold text-blue-600 self-end">
-            피싱 사이트 검사
-        </h1>
-    </div>
-    
-    
-    
+    <header class="w-full text-center mb-10">
+        <div class="inline-flex items-center justify-center gap-4 px-6 py-4 rounded-xl bg-white shadow-lg border border-gray-200">
+            <img src="../static/image.png" alt="로고" class="w-12 h-12">
+          <h1 class="text-3xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-400 tracking-tight">
+            안심링크
+          </h1>
+        </div>
+        <p class="mt-4 text-sm md:text-base text-gray-600">피싱 위험 없는 인터넷을 위한 URL 보안 진단 서비스</p>
+      </header>
 
     <div class="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto">
-
         <!-- 왼쪽: 입력 영역 -->
         <div class="flex-1 bg-white p-6 rounded-lg shadow">
             <form id="searchForm" class="flex flex-col gap-4">
@@ -55,7 +52,6 @@
                     <div id="progress" class="text-sm text-gray-700"></div>
                 </div>
             </section>
-
             <section id="results-section" class="bg-white p-5 rounded-lg shadow">
                 <h2 class="text-lg font-semibold mb-4 border-b pb-2">검사 결과</h2>
                 <div id="tabs-container">
@@ -65,7 +61,11 @@
                 <div id="tab-contents"></div>
             </section>
         </div>
-
+    </div>
+    <div class="max-w-7xl mx-auto mt-10 flex justify-end">
+        <a href="https://www.kopo.ac.kr/chuncheon/index.do" target="_blank" rel="noopener noreferrer">
+            <img src="../static/chuncheon.png" alt="폴리텍로고" class="opacity-80 hover:opacity-100 transition-opacity">
+        </a>
     </div>
 
     <script src="../static/script.js"></script>
