@@ -66,7 +66,7 @@ def analyze():
                 
                 # URL 대조 결과 평가
                 if not url_check:
-                    risk_score += 25
+                    risk_score += 20
                     risk_messages.append("데이터베이스에 등록되지 않은 도메인입니다.")
                 
                 # SSL 인증서 평가

@@ -31,3 +31,7 @@ Timestamp,IP,URL,URL_Check,SSL_Check,Domain_Days,Country
 2025-04-29 08:54:28,127.0.0.1,https://cafe.navereldie.com/,False,1,17,미국
 2025-04-29 08:54:31,127.0.0.1,https://google.com,False,1,10088,미국
 2025-04-29 08:54:33,127.0.0.1,https://cafe.navereldie.com/joonggonara,False,1,17,미국
+2025-04-29 08:57:16,127.0.0.1,https://google.com,False,1,10088,미국
+2025-04-29 08:57:53,127.0.0.1,https://google.com,False,1,10088,미국
+2025-04-29 08:58:22,127.0.0.1,https://google.com,False,1,10088,미국
+2025-04-29 08:58:38,127.0.0.1,https://google.com,False,1,10088,미국
