@@ -60,14 +60,50 @@ def analyze():
                 yield f'data: {json.dumps({"type": "progress", "message": "✅ IP 위치 확인 완료"})}\n\n'
                 time.sleep(0.1)
 
+                # 위험도 평가
+                risk_score = 0
+                risk_messages = []
+                
+                # URL 대조 결과 평가
+                if not url_check:
+                    risk_score += 25
+                    risk_messages.append("데이터베이스에 등록되지 않은 도메인입니다.")
+                
+                # SSL 인증서 평가
+                if ssl_check == 0:
+                    risk_score += 25
+                    risk_messages.append("SSL 인증서가 유효하지 않습니다.")
+                elif ssl_check == -1:
+                    risk_score += 15
+                    risk_messages.append("HTTP 연결입니다. SSL 인증서가 존재하지 않습니다.")
+                
+                # 도메인 생성일 평가
+                if 0 < domain_days < 120:
+                    risk_score += 30
+                    risk_messages.append(f"도메인이 최근({domain_days}일 전)에 생성되었습니다.")
+                elif domain_days <= 0:
+                    risk_score += 15
+                    risk_messages.append("도메인 생성일을 확인할 수 없습니다.")
+                
+                # 서버 위치 평가
+                if country != "한국" and country != "알수없음":
+                    risk_score += 15
+                    risk_messages.append(f"서버가 해외({country})에 위치해 있습니다.")
+                elif country == "알수없음":
+                    risk_score += 20
+                    risk_messages.append("서버 위치를 확인할 수 없습니다.")
+                
+                # 위험도 레벨 계산 (0-100)
+                risk_level = min(100, risk_score)
+                
                 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 log_message = [timestamp, client_ip, url, url_check, ssl_check, domain_days, country]
                 
                 # CSV에 로그 기록
                 writer.writerow(log_message)
 
-                # 최종 결과 전송
-                yield f'data: {json.dumps({"type": "result", "url": url, "url_check": url_check, "ssl_check": ssl_check, "domain_check": domain_days, "location_check": country})}\n\n'
+                # 최종 결과 전송 (위험도 정보 포함)
+                yield f'data: {json.dumps({"type": "result", "url": url, "url_check": url_check, "ssl_check": ssl_check, "domain_check": domain_days, "location_check": country, "risk_level": risk_level, "risk_messages": risk_messages})}\n\n'
                 print("-----------------------------------------------------")
 
         # 모든 URL 검사 완료

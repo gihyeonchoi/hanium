@@ -96,12 +96,22 @@ document.addEventListener('DOMContentLoaded', function() {
         // URL별 진행 상황 컨테이너 생성
         const urlProgressDiv = document.createElement('div');
         urlProgressDiv.className = 'bg-gray-50 border border-gray-200 rounded p-4 mb-4';
-        urlProgressDiv.innerHTML = `
-            <div class="flex justify-between items-center mb-2">
-                <div class="font-medium text-blue-600 truncate max-w-4/5">${index + 1}. ${url}</div>
-            </div>
-            <div class="ml-4" id="progress-steps-${index}"></div>
-        `;
+        
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'flex justify-between items-center mb-2';
+        
+        const urlLabel = document.createElement('div');
+        urlLabel.className = 'font-medium text-blue-600 truncate max-w-4/5';
+        urlLabel.textContent = `${index + 1}. ${url}`;
+        
+        headerDiv.appendChild(urlLabel);
+        urlProgressDiv.appendChild(headerDiv);
+        
+        const stepsDiv = document.createElement('div');
+        stepsDiv.className = 'ml-4';
+        stepsDiv.id = `progress-steps-${index}`;
+        urlProgressDiv.appendChild(stepsDiv);
+        
         progressDiv.appendChild(urlProgressDiv);
         
         // 현재 URL의 진행 상황을 표시할 요소 저장
@@ -145,56 +155,171 @@ document.addEventListener('DOMContentLoaded', function() {
         tabContent.className = 'hidden';
         tabContent.dataset.index = index;
         
-        // 상태에 따른 스타일 적용
-        const urlStatus = data.url_check ? 
-            '<span class="text-green-600 font-medium">데이터베이스에 등록된 안전한 도메인입니다.</span>' : 
-            '<span class="text-orange-500 font-medium">데이터베이스에 등록되지 않은 도메인입니다.</span>';
+        // 테이블 생성
+        const table = document.createElement('table');
+        table.className = 'w-full';
+        const tbody = document.createElement('tbody');
         
-        let sslStatus = '';
+        // URL 행
+        const urlRow = createTableRow('🔗 검사한 URL', data.url);
+        tbody.appendChild(urlRow);
+        
+        // URL 대조 결과 행
+        const urlStatus = data.url_check ? 
+            createStatusSpan('데이터베이스에 등록된 안전한 도메인입니다.', 'text-green-600') : 
+            createStatusSpan('데이터베이스에 등록되지 않은 도메인입니다.', 'text-orange-500');
+        const urlCheckRow = createTableRow('🗃️ URL 대조 결과', urlStatus);
+        tbody.appendChild(urlCheckRow);
+        
+        // SSL 인증서 행
+        let sslStatus;
         if (data.ssl_check === 1) {
-            sslStatus = '<span class="text-green-600 font-medium">SSL 인증서가 유효합니다. (HTTPS 연결 정상)</span>';
+            sslStatus = createStatusSpan('SSL 인증서가 유효합니다. (HTTPS 연결 정상)', 'text-green-600');
         } else if (data.ssl_check === 0) {
-            sslStatus = '<span class="text-red-600 font-medium">SSL 인증서가 유효하지 않습니다.</span>';
+            sslStatus = createStatusSpan('SSL 인증서가 유효하지 않습니다.', 'text-red-600');
         } else {
-            sslStatus = '<span class="text-orange-500 font-medium">HTTP 연결입니다. SSL 인증서가 존재하지 않습니다.</span>';
+            sslStatus = createStatusSpan('HTTP 연결입니다. SSL 인증서가 존재하지 않습니다.', 'text-orange-500');
+        }
+        const sslRow = createTableRow('🔐 SSL 인증서', sslStatus);
+        tbody.appendChild(sslRow);
+        
+        // 도메인 생성일 행
+        let domainStatus;
+        if (data.domain_check > 0) {
+            domainStatus = document.createTextNode(`약 ${data.domain_check}일 전에 생성된 도메인입니다.`);
+        } else {
+            domainStatus = document.createTextNode("도메인 생성일을 확인할 수 없습니다.");
+        }
+        const domainRow = createTableRow('🕒 도메인 생성일', domainStatus);
+        tbody.appendChild(domainRow);
+        
+        // 서버 위치 행
+        let locationStatus;
+        if (data.location_check && data.location_check !== "알수없음") {
+            locationStatus = document.createTextNode(`${data.location_check}에서 운영되고 있는 서버입니다.`);
+        } else {
+            locationStatus = document.createTextNode("국가 정보를 확인할 수 없습니다.");
+        }
+        const locationRow = createTableRow('🌍 서버 위치', locationStatus);
+        tbody.appendChild(locationRow);
+        
+        table.appendChild(tbody);
+        tabContent.appendChild(table);
+        
+        // 위험도 평가 섹션 추가
+        if (data.risk_level !== undefined) {
+            const riskSection = createRiskAssessmentSection(data.risk_level, data.risk_messages);
+            tabContent.appendChild(riskSection);
         }
         
-        // 결과 테이블 생성
-        tabContent.innerHTML = `
-            <table class="w-full">
-                <tbody>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-3 px-2 text-sm font-medium text-gray-500 w-40">🔗 검사한 URL</td>
-                        <td class="py-3 px-2 text-sm text-gray-800">${data.url}</td>
-                    </tr>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-3 px-2 text-sm font-medium text-gray-500">🗃️ URL 대조 결과</td>
-                        <td class="py-3 px-2 text-sm text-gray-800">${urlStatus}</td>
-                    </tr>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-3 px-2 text-sm font-medium text-gray-500">🔐 SSL 인증서</td>
-                        <td class="py-3 px-2 text-sm text-gray-800">${sslStatus}</td>
-                    </tr>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-3 px-2 text-sm font-medium text-gray-500">🕒 도메인 생성일</td>
-                        <td class="py-3 px-2 text-sm text-gray-800">${
-                            data.domain_check > 0 ? `약 ${data.domain_check}일 전에 생성된 도메인입니다.` : 
-                            "도메인 생성일을 확인할 수 없습니다."
-                        }</td>
-                    </tr>
-                    <tr class="border-b border-gray-100">
-                        <td class="py-3 px-2 text-sm font-medium text-gray-500">🌍 서버 위치</td>
-                        <td class="py-3 px-2 text-sm text-gray-800">${
-                            data.location_check && data.location_check !== "알수없음" ?
-                                `${data.location_check}에서 운영되고 있는 서버입니다.` :
-                                "국가 정보를 확인할 수 없습니다."
-                        }</td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
-        
         tabContentsDiv.appendChild(tabContent);
+    }
+    
+    function createTableRow(label, content) {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-100';
+        
+        const labelCell = document.createElement('td');
+        labelCell.className = 'py-3 px-2 text-sm font-medium text-gray-500 w-40';
+        labelCell.textContent = label;
+        
+        const contentCell = document.createElement('td');
+        contentCell.className = 'py-3 px-2 text-sm text-gray-800';
+        
+        // content가 노드인지 확인하고 처리
+        if (content instanceof Node) {
+            contentCell.appendChild(content);
+        } else {
+            contentCell.textContent = content;
+        }
+        
+        row.appendChild(labelCell);
+        row.appendChild(contentCell);
+        
+        return row;
+    }
+    
+    function createStatusSpan(text, colorClass) {
+        const span = document.createElement('span');
+        span.className = `${colorClass} font-medium`;
+        span.textContent = text;
+        return span;
+    }
+    
+    function createRiskAssessmentSection(riskLevel, riskMessages) {
+        // 위험도 컨테이너 생성
+        const container = document.createElement('div');
+        container.className = 'mt-6 border-t border-gray-200 pt-4';
+        
+        // 위험도 헤더
+        const header = document.createElement('h3');
+        header.className = 'text-lg font-medium text-gray-700 mb-2';
+        header.textContent = '위험도 평가';
+        container.appendChild(header);
+        
+        // 색상 계산 (0-100 사이의 위험도를 기반으로 색상 결정)
+        // 0: 초록색(안전), 50: 노란색(주의), 100: 빨간색(위험)
+        const getColorFromRiskLevel = (level) => {
+            if (level <= 0) return 'text-green-600';
+            if (level < 20) return 'text-green-500';
+            if (level < 40) return 'text-yellow-500';
+            if (level < 60) return 'text-orange-500';
+            if (level < 80) return 'text-red-500';
+            return 'text-red-600';
+        };
+        
+        // 위험도 표시기 생성
+        const riskIndicator = document.createElement('div');
+        riskIndicator.className = 'mb-2';
+        
+        const riskValueDisplay = document.createElement('div');
+        const colorClass = getColorFromRiskLevel(riskLevel);
+        riskValueDisplay.className = `text-xl font-bold ${colorClass} mb-1`;
+        
+        // 위험도 레벨에 따른 텍스트 표시
+        let riskText = '';
+        if (riskLevel <= 10) {
+            riskText = '안전';
+        } else if (riskLevel <= 30) {
+            riskText = '낮은 위험';
+        } else if (riskLevel <= 60) {
+            riskText = '중간 위험';
+        } else if (riskLevel <= 80) {
+            riskText = '높은 위험';
+        } else {
+            riskText = '매우 위험';
+        }
+        
+        // 위험 점수 텍스트 표시
+        riskValueDisplay.textContent = `${riskText} (${riskLevel}점)`;
+        riskIndicator.appendChild(riskValueDisplay);
+
+        // ✅ 여기서 진행 막대(progressContainer) 관련 부분은 삭제!
+
+        container.appendChild(riskIndicator);
+
+        
+        // 위험 메시지가 있는 경우에만 표시
+        if (riskMessages && riskMessages.length > 0) {
+            const messageHeader = document.createElement('h4');
+            messageHeader.className = 'text-sm font-medium text-gray-700 mt-3 mb-1';
+            messageHeader.textContent = '주의 사항:';
+            container.appendChild(messageHeader);
+            
+            const messageList = document.createElement('ul');
+            messageList.className = 'list-disc pl-5 space-y-1';
+            
+            riskMessages.forEach(message => {
+                const listItem = document.createElement('li');
+                listItem.className = `text-sm ${colorClass}`;
+                listItem.textContent = message;
+                messageList.appendChild(listItem);
+            });
+            
+            container.appendChild(messageList);
+        }
+        
+        return container;
     }
     
     function activateTab(index) {
@@ -217,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         urlSelect.value = index;
         
         // 활성 콘텐츠 표시
-        const contents = document.querySelectorAll('#tab-contents div');
+        const contents = document.querySelectorAll('#tab-contents div[data-index]');
         contents.forEach(content => {
             if (parseInt(content.dataset.index) === index) {
                 content.classList.remove('hidden');
