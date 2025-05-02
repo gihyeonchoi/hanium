@@ -57,7 +57,6 @@ def analyze():
                 time.sleep(0.1)
 
                 location_ok, country = Location_to_IP(url)
-                print(f"컨트리 : {country}")
                 yield f'data: {json.dumps({"type": "progress", "message": "✅ IP 위치 확인 완료"})}\n\n'
                 time.sleep(0.1)
 

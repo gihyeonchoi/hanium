@@ -55,3 +55,15 @@ Timestamp,IP,URL,URL_Check,SSL_Check,Domain_Days,Country
 2025-05-02 10:55:25,127.0.0.1,https://blog.naver.com/misman95//google.com@youtube.com,True,1,10094,대한민국
 2025-05-02 10:55:58,127.0.0.1,https://blog.naver.com/misman95//google.com,True,1,10094,대한민국
 2025-05-02 10:56:08,127.0.0.1,https://blog.naver.com/misman95//google.com,True,1,10094,대한민국
+2025-05-02 11:07:13,127.0.0.1,https://naver.com,True,1,10094,대한민국
+2025-05-02 11:07:44,127.0.0.1,https://naver.com,True,1,10094,대한민국
+2025-05-02 11:07:46,127.0.0.1,http://google.com,False,-1,10091,미국
+2025-05-02 11:07:49,127.0.0.1,https://youtube.com,False,1,7381,미국
+2025-05-02 11:09:09,127.0.0.1,http://google.com,False,-1,10091,미국
+2025-05-02 11:09:47,127.0.0.1,http://google.com,False,-1,10091,미국
+2025-05-02 11:13:58,127.0.0.1,google.com,False,1,10091,알수없음
+2025-05-02 11:14:55,127.0.0.1,naver.com,True,1,10094,알수없음
+2025-05-02 11:15:43,127.0.0.1,naver.com,True,1,10094,알수없음
+2025-05-02 11:16:17,127.0.0.1,naver.com,True,1,10094,알수없음
+2025-05-02 11:17:43,127.0.0.1,naver.com,True,1,10094,대한민국
+2025-05-02 11:17:55,127.0.0.1,google.com,False,1,10091,미국

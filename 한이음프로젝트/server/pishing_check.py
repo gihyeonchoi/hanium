@@ -81,6 +81,8 @@ def SSL_check(url):
     import certifi
     from urllib.parse import urlparse
 
+    print(f"ssl 체크 : {url}")
+
     def try_request(full_url):
         try:
             response = requests.get(full_url, verify=certifi.where(), timeout=5)
@@ -94,7 +96,6 @@ def SSL_check(url):
             return -2  # 연결 실패
 
     parsed = urlparse(url)
-
     # 스킴이 없다면 https 먼저 붙여서 시도
     if not parsed.scheme:
         https_url = "https://" + url
@@ -176,9 +177,11 @@ def Location_to_IP(url):
                 iso_to_korean[iso_code] = korean_name
         return iso_to_korean
 
+    print(f"로케이션 아이피 : {url}")
     try:
         parsed_url = urlparse(url)
-        ip_address = get_ip_from_url(parsed_url.netloc)
+        print(parsed_url)
+        ip_address = get_ip_from_url(parsed_url.netloc if parsed_url.netloc else parsed_url.path)
         if ip_address is None:
             print("IP 주소를 찾을 수 없습니다.")
             return False, "알수없음"
