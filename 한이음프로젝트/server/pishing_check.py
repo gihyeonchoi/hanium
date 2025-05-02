@@ -199,3 +199,27 @@ def Location_to_IP(url):
     except Exception as e:
         print("오류 발생:", e)
         return False, "알수없음"
+    
+def Additional_risk(url):
+    '''
+    URL 문자열에서 추가적인 위험 요소 탐지
+    - "//"가 URL 경로 중간에 여러 번 등장할 경우
+    - "@" 심볼이 포함된 경우 (피싱 URL에 종종 사용됨)
+    
+    리턴: 탐지된 위험 요소 메시지 리스트
+    '''
+    risk_messages = []
+    risk_level = 0
+
+    # 중간에 //가 1번 이상 반복되는 경우 (단, 시작의 https:// 제외)
+    if url.count('//') > 1:
+        risk_messages.append('⚠️ URL에 비정상적인 리다이렉션 경로가 포함되어 있습니다.')
+        risk_level += 40
+        
+
+    # @ 기호 포함 여부
+    if '@' in url:
+        risk_messages.append('⚠️ URL에 비정상적인 서버 정보(@심볼)가 포함되어 있습니다.')
+        risk_level += 40
+
+    return risk_level, risk_messages

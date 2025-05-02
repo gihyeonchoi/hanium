@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, Response
-from pishing_check import URL_parsing, URL_check, SSL_check, Domain_check, Location_to_IP
+from pishing_check import URL_parsing, URL_check, SSL_check, Domain_check, Location_to_IP, Additional_risk
 import json
 import time
 import csv
@@ -57,13 +57,24 @@ def analyze():
                 time.sleep(0.1)
 
                 location_ok, country = Location_to_IP(url)
+                print(f"컨트리 : {country}")
                 yield f'data: {json.dumps({"type": "progress", "message": "✅ IP 위치 확인 완료"})}\n\n'
+                time.sleep(0.1)
+
+                additional_risk_score, additional_risk_msg = Additional_risk(url)
+
+                yield f'data: {json.dumps({"type": "progress", "message": "✅ 추가 서버 정보 탐지 완료"})}\n\n'
                 time.sleep(0.1)
 
                 # 위험도 평가
                 risk_score = 0
                 risk_messages = []
                 
+                # 추가 서버 정보 평가
+                if additional_risk_msg:
+                    risk_score += additional_risk_score
+                    risk_messages.extend(additional_risk_msg)
+                    
                 # URL 대조 결과 평가
                 if not url_check:
                     risk_score += 20
@@ -86,13 +97,16 @@ def analyze():
                     risk_messages.append("도메인 생성일을 확인할 수 없습니다.")
                 
                 # 서버 위치 평가
-                if country != "한국" and country != "알수없음":
+                if country not in ["대한민국", "한국", "알수없음"]:
                     risk_score += 15
                     risk_messages.append(f"서버가 해외({country})에 위치해 있습니다.")
                 elif country == "알수없음":
                     risk_score += 20
                     risk_messages.append("서버 위치를 확인할 수 없습니다.")
                 
+                if not risk_messages:
+                    risk_messages.append("해당 사이트는 안전합니다.")
+
                 # 위험도 레벨 계산 (0-100)
                 risk_level = min(100, risk_score)
                 
