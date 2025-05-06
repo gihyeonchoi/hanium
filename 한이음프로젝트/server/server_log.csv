@@ -67,3 +67,9 @@ Timestamp,IP,URL,URL_Check,SSL_Check,Domain_Days,Country
 2025-05-02 11:16:17,127.0.0.1,naver.com,True,1,10094,알수없음
 2025-05-02 11:17:43,127.0.0.1,naver.com,True,1,10094,대한민국
 2025-05-02 11:17:55,127.0.0.1,google.com,False,1,10091,미국
+2025-05-06 22:22:12,127.0.0.1,https://navercafeshopping.org/no_order/54,False,1,142,미국
+2025-05-06 22:24:12,127.0.0.1,https://navercafeshopping.org/no_order/54,False,1,142,미국
+2025-05-06 22:28:50,127.0.0.1,https://cafe.jonggnaraoawpcoawds.com/joonggonara/202411139351023,False,1,176,미국
+2025-05-06 22:29:02,127.0.0.1,https://navercafeshopping.org/no_order/54,False,1,142,미국
+2025-05-06 22:30:27,127.0.0.1,https://cafe.navereldie.com/joonggonara/202504186068946,False,1,24,미국
+2025-05-06 22:31:11,127.0.0.1,https://cafe.navereldie.com/order/84235794,False,1,24,미국

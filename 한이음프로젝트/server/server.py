@@ -88,7 +88,7 @@ def analyze():
                     risk_messages.append("HTTP 연결입니다. SSL 인증서가 존재하지 않습니다.")
                 
                 # 도메인 생성일 평가
-                if 0 < domain_days < 120:
+                if 0 < domain_days < 180:
                     risk_score += 30
                     risk_messages.append(f"도메인이 최근({domain_days}일 전)에 생성되었습니다.")
                 elif domain_days <= 0:

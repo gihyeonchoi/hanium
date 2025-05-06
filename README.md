@@ -13,3 +13,10 @@ pip install python-whois
 pip install flask
 
 https://www.maxmind.com/
+
+
+테스트 url:
+https://navercafeshopping.org/no_order/54
+https://cafe.jonggnaraoawpcoawds.com/joonggonara/202411139351023
+https://cafe.navereldie.com/joonggonara/202504186068946
+https://cafe.navereldie.com/order/84235794
