@@ -1,0 +1,3 @@
+﻿id,log_id,url,url_not_in_db,ssl_invalid,ssl_http_only,ssl_unreachable,domain_age_days,server_country,has_double_slash,has_at_symbol,has_ip_address,has_url_shortener,has_suspicious_tld,has_excessive_encoding,has_open_redirect,has_xss_pattern,has_homograph_attack,homograph_char_count,redirect_chain_count,url_risk_score,ssl_risk_score,domain_risk_score,location_risk_score,additional_risk_score,total_risk_score,created_at
+2,2,https://hitnewskr.info/immediatealgox500/l3/?subid=1dcj5tr1qgt3,1,0,0,0,137,영국,0,0,0,0,0,0,0,0,0,0,0,20,0,30,15,0,65,2025-07-01 10:57:38
+1,1,https://claude.ai/,1,0,0,0,2523,미국,0,0,0,0,0,0,0,0,0,0,0,20,0,0,15,0,35,2025-07-01 10:49:04

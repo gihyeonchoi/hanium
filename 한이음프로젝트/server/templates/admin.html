@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안심링크 관리자 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/npm/pretendard@1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+    <link rel="icon" href="../static/favicon.ico">
+</head>
+<body class="bg-gray-100" style="font-family: 'Pretendard Variable', sans-serif;">
+    <div class="container mx-auto px-4 py-8">
+        <!-- 헤더 -->
+        <header class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">안심링크 관리자 대시보드</h1>
+                <p class="text-gray-600 mt-2">피싱 검사 로그 및 통계</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="window.location.href='/'" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                    메인 페이지
+                </button>
+                <button onclick="exportData()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    데이터 내보내기
+                </button>
+                <button onclick="showCleanupModal()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    로그 정리
+                </button>
+                <button onclick="window.location.href='/logout'" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900">
+                    로그아웃
+                </button>
+            </div>
+        </header>
+
+        <!-- 제보 현황 섹션 -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">피싱 사이트 제보 현황</h2>
+                <div class="flex gap-2">
+                    <button onclick="filterReports('pending')" class="px-3 py-1 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 text-sm">
+                        대기중
+                    </button>
+                    <button onclick="filterReports('reviewed')" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        검토됨
+                    </button>
+                    <button onclick="filterReports('processed')" class="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">
+                        처리됨
+                    </button>
+                    <button onclick="filterReports(null)" class="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm">
+                        전체
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-yellow-100">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">시간</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">제보 내용</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">사유</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">상태</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">작업</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-tbody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="5" class="px-4 py-2 text-center text-gray-500 text-sm">로딩 중...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-sm font-medium text-gray-500">총 검사 수</h3>
+                <p class="text-2xl font-bold text-gray-800" id="total-checks">-</p>
+                <p class="text-xs text-gray-500 mt-1">전체 기간</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-sm font-medium text-gray-500">검사된 URL</h3>
+                <p class="text-2xl font-bold text-gray-800" id="total-urls">-</p>
+                <p class="text-xs text-gray-500 mt-1">전체 기간</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-sm font-medium text-gray-500">평균 위험도</h3>
+                <p class="text-2xl font-bold text-gray-800" id="avg-risk">-</p>
+                <p class="text-xs text-gray-500 mt-1">백분율</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-sm font-medium text-gray-500">고위험 URL</h3>
+                <p class="text-2xl font-bold text-red-600" id="high-risk">-</p>
+                <p class="text-xs text-gray-500 mt-1">70% 이상</p>
+            </div>
+        </div>
+
+        <!-- 검색 및 필터 -->
+        <div class="bg-white p-6 rounded-lg shadow mb-8">
+            <h2 class="text-xl font-semibold mb-4">로그 검색</h2>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <input type="text" id="search-input" placeholder="URL 또는 메시지 검색" 
+                       class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="risk-filter" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">모든 위험도</option>
+                    <option value="70">고위험 (70+)</option>
+                    <option value="40">중위험 (40+)</option>
+                    <option value="0">저위험</option>
+                </select>
+                <select id="country-filter" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">모든 국가</option>
+                    <option value="대한민국">대한민국</option>
+                    <option value="알수없음">알수없음</option>
+                </select>
+                <input type="date" id="date-filter" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="searchLogs()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    검색
+                </button>
+            </div>
+        </div>
+
+        <!-- 차트 영역 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">위험도 분포</h2>
+                <canvas id="risk-chart"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">국가별 분포</h2>
+                <canvas id="country-chart"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">시간별 검사 수</h2>
+                <canvas id="hourly-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- 로그 테이블 -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 border-b flex justify-between items-center">
+                <h2 class="text-xl font-semibold">최근 로그</h2>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-600">자동 새로고침</span>
+                    <input type="checkbox" id="auto-refresh" checked class="rounded">
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">시간</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL 수</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">평균 위험도</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상세</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs-tbody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">로딩 중...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-6 py-4 border-t flex justify-between items-center">
+                <button onclick="loadMoreLogs()" class="text-blue-600 hover:text-blue-800">더 보기</button>
+                <span id="log-count" class="text-sm text-gray-600">0개 표시 중</span>
+            </div>
+        </div>
+
+        <!-- 상세 정보 모달 -->
+        <div id="detail-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" onclick="closeModal()">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">URL 검사 상세 정보</h3>
+                        <div id="modal-content" class="max-h-96 overflow-y-auto">
+                            <!-- 상세 정보가 여기에 표시됩니다 -->
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button onclick="closeModal()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 로그 정리 모달 -->
+        <div id="cleanup-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" onclick="closeCleanupModal()">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">로그 정리</h3>
+                        <p class="text-gray-600 mb-4">선택한 기간보다 오래된 로그를 삭제합니다.</p>
+                        <select id="cleanup-days" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="7">7일 이상</option>
+                            <option value="30" selected>30일 이상</option>
+                            <option value="60">60일 이상</option>
+                            <option value="90">90일 이상</option>
+                        </select>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button onclick="performCleanup()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            정리 실행
+                        </button>
+                        <button onclick="closeCleanupModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            취소
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let riskChart, countryChart, hourlyChart;
+        let currentOffset = 0;
+        let autoRefreshInterval;
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStatistics();
+            loadLogs();
+            loadReports();
+            initCharts();
+            setupAutoRefresh();
+            loadCountryOptions();
+        });
+
+        // 제보 목록 로드
+        async function loadReports(status = null) {
+            try {
+                let url = '/api/reports';
+                if (status) {
+                    url += '?status=' + status;
+                }
+                
+                const response = await fetch(url);
+                const reports = await response.json();
+                
+                const tbody = document.getElementById('reports-tbody');
+                tbody.innerHTML = '';
+                
+                if (reports.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-2 text-center text-gray-500 text-sm">제보가 없습니다.</td></tr>';
+                    return;
+                }
+                
+                reports.forEach(function(report) {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50';
+                    
+                    let statusBadge = '';
+                    if (report.status === 'pending') {
+                        statusBadge = '<span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">대기중</span>';
+                    } else if (report.status === 'reviewed') {
+                        statusBadge = '<span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">검토됨</span>';
+                    } else {
+                        statusBadge = '<span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">처리됨</span>';
+                    }
+                    
+                    const createdDate = new Date(report.created_at).toLocaleString('ko-KR');
+                    
+                    tr.innerHTML = 
+                        '<td class="px-4 py-2 text-sm">' + createdDate + '</td>' +
+                        '<td class="px-4 py-2 text-sm max-w-xs truncate" title="' + report.message_or_url + '">' + report.message_or_url + '</td>' +
+                        '<td class="px-4 py-2 text-sm max-w-xs truncate" title="' + report.reason + '">' + report.reason + '</td>' +
+                        '<td class="px-4 py-2">' + statusBadge + '</td>' +
+                        '<td class="px-4 py-2">' +
+                            '<button onclick="updateReportStatus(' + report.id + ')" class="text-blue-600 hover:text-blue-800 text-sm">상태 변경</button>' +
+                        '</td>';
+                    
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('제보 로드 실패:', error);
+            }
+        }
+
+        // 제보 필터링
+        function filterReports(status) {
+            loadReports(status);
+        }
+
+        // 제보 상태 업데이트
+        async function updateReportStatus(reportId) {
+            const status = prompt('상태를 선택하세요 (pending/reviewed/processed):');
+            if (!status || !['pending', 'reviewed', 'processed'].includes(status)) {
+                alert('유효한 상태를 입력하세요.');
+                return;
+            }
+            
+            const adminNotes = prompt('관리자 메모 (선택사항):');
+            
+            try {
+                const response = await fetch('/api/reports/' + reportId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: status, admin_notes: adminNotes })
+                });
+                
+                if (response.ok) {
+                    showNotification('상태가 업데이트되었습니다.', 'success');
+                    loadReports();
+                } else {
+                    showNotification('상태 업데이트 실패', 'error');
+                }
+            } catch (error) {
+                console.error('상태 업데이트 실패:', error);
+                showNotification('상태 업데이트 실패', 'error');
+            }
+        }
+
+        // 통계 로드
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/statistics');
+                const stats = await response.json();
+                
+                document.getElementById('total-checks').textContent = stats.overall.total_checks || 0;
+                document.getElementById('total-urls').textContent = stats.overall.total_urls || 0;
+                document.getElementById('avg-risk').textContent = Math.round(stats.overall.avg_risk_level || 0) + '%';
+                document.getElementById('high-risk').textContent = stats.overall.high_risk_urls || 0;
+                
+                updateCharts(stats);
+            } catch (error) {
+                console.error('통계 로드 실패:', error);
+            }
+        }
+
+        // 로그 로드
+        async function loadLogs(append = false) {
+            try {
+                const response = await fetch('/api/logs?limit=20');
+                const logs = await response.json();
+                
+                const tbody = document.getElementById('logs-tbody');
+                if (!append) {
+                    tbody.innerHTML = '';
+                    currentOffset = 0;
+                }
+                
+                if (logs.length === 0 && !append) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">로그가 없습니다.</td></tr>';
+                    return;
+                }
+                
+                logs.forEach(function(log) {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 cursor-pointer';
+                    tr.onclick = function() { showDetail(log.id); };
+                    
+                    const avgRisk = Math.round(log.avg_risk_level || 0);
+                    let riskClass = 'text-green-600';
+                    if (avgRisk >= 70) riskClass = 'text-red-600';
+                    else if (avgRisk >= 40) riskClass = 'text-yellow-600';
+                    
+                    const logDate = new Date(log.timestamp).toLocaleString('ko-KR');
+                    
+                    tr.innerHTML = 
+                        '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">' + logDate + '</td>' +
+                        '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">' + log.client_ip + '</td>' +
+                        '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">' + (log.url_count || 0) + '</td>' +
+                        '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium ' + riskClass + '">' + avgRisk + '%</td>' +
+                        '<td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">' +
+                            '<button class="hover:underline">보기</button>' +
+                        '</td>';
+                    
+                    tbody.appendChild(tr);
+                });
+                
+                currentOffset += logs.length;
+                document.getElementById('log-count').textContent = results.length + '개 검색됨';
+                showNotification('검색 완료', 'success');
+            } catch (error) {
+                console.error('검색 실패:', error);
+                showNotification('검색 실패', 'error');
+            }
+        }
+
+        // 상세 정보 보기
+        async function showDetail(logId) {
+            try {
+                const response = await fetch('/api/logs/' + logId);
+                const details = await response.json();
+                
+                const modalContent = document.getElementById('modal-content');
+                modalContent.innerHTML = '';
+                
+                if (details.length === 0) {
+                    modalContent.innerHTML = '<p class="text-gray-500">상세 정보가 없습니다.</p>';
+                } else {
+                    details.forEach(function(detail) {
+                        let riskClass = 'text-green-600';
+                        if (detail.risk_level >= 70) riskClass = 'text-red-600';
+                        else if (detail.risk_level >= 40) riskClass = 'text-yellow-600';
+                        
+                        let sslStatus = '✅ 유효';
+                        if (detail.ssl_check === 0) sslStatus = '❌ 무효';
+                        else if (detail.ssl_check === -1) sslStatus = '⚠️ HTTP';
+                        else if (detail.ssl_check === -2) sslStatus = '❓ 확인불가';
+                        
+                        const detailDiv = document.createElement('div');
+                        detailDiv.className = 'mb-4 p-4 border rounded-lg';
+                        
+                        let riskMessagesHtml = '';
+                        if (detail.risk_messages && detail.risk_messages.length > 0) {
+                            riskMessagesHtml = '<div class="mt-3">' +
+                                '<h5 class="text-sm font-semibold text-gray-700 mb-1">위험 요소:</h5>' +
+                                '<ul class="text-sm text-gray-600 list-disc list-inside">';
+                            detail.risk_messages.forEach(function(msg) {
+                                riskMessagesHtml += '<li>' + msg + '</li>';
+                            });
+                            riskMessagesHtml += '</ul></div>';
+                        }
+                        
+                        let additionalRisksHtml = '';
+                        if (detail.additional_risks && detail.additional_risks.length > 0) {
+                            additionalRisksHtml = '<div class="mt-3">' +
+                                '<h5 class="text-sm font-semibold text-gray-700 mb-1">추가 위험 요소:</h5>' +
+                                '<ul class="text-sm text-gray-600 list-disc list-inside">';
+                            detail.additional_risks.forEach(function(risk) {
+                                additionalRisksHtml += '<li>' + risk + '</li>';
+                            });
+                            additionalRisksHtml += '</ul></div>';
+                        }
+                        
+                        detailDiv.innerHTML = 
+                            '<h4 class="font-semibold text-lg mb-2 break-all">' + detail.url + '</h4>' +
+                            '<div class="grid grid-cols-2 gap-2 text-sm">' +
+                                '<div>' +
+                                    '<span class="text-gray-600">위험도:</span> ' +
+                                    '<span class="font-medium ' + riskClass + '">' + detail.risk_level + '%</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<span class="text-gray-600">국가:</span> ' +
+                                    '<span class="font-medium">' + detail.country + '</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<span class="text-gray-600">URL 검증:</span> ' +
+                                    '<span class="font-medium">' + (detail.url_check ? '✅ 등록됨' : '❌ 미등록') + '</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<span class="text-gray-600">SSL 상태:</span> ' +
+                                    '<span class="font-medium">' + sslStatus + '</span>' +
+                                '</div>' +
+                                '<div class="col-span-2">' +
+                                    '<span class="text-gray-600">도메인 생성:</span> ' +
+                                    '<span class="font-medium">' + (detail.domain_days > 0 ? detail.domain_days + '일 전' : '확인 불가') + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                            riskMessagesHtml +
+                            additionalRisksHtml +
+                            '<div class="mt-3 text-xs text-gray-500">' +
+                                '검사 시간: ' + new Date(detail.created_at).toLocaleString('ko-KR') +
+                            '</div>';
+                        
+                        modalContent.appendChild(detailDiv);
+                    });
+                }
+                
+                document.getElementById('detail-modal').classList.remove('hidden');
+            } catch (error) {
+                console.error('상세 정보 로드 실패:', error);
+                showNotification('상세 정보 로드 실패', 'error');
+            }
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // 로그 정리 모달 표시
+        function showCleanupModal() {
+            document.getElementById('cleanup-modal').classList.remove('hidden');
+        }
+
+        // 로그 정리 모달 닫기
+        function closeCleanupModal() {
+            document.getElementById('cleanup-modal').classList.add('hidden');
+        }
+
+        // 로그 정리 실행
+        async function performCleanup() {
+            const days = document.getElementById('cleanup-days').value;
+            
+            if (!confirm('정말로 ' + days + '일 이상 된 로그를 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/cleanup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ days: parseInt(days) })
+                });
+                
+                const result = await response.json();
+                showNotification(result.deleted + '개의 로그가 삭제되었습니다.', 'success');
+                closeCleanupModal();
+                loadLogs();
+                loadStatistics();
+            } catch (error) {
+                console.error('로그 정리 실패:', error);
+                showNotification('로그 정리 실패', 'error');
+            }
+        }
+
+        // 데이터 내보내기
+        async function exportData() {
+            try {
+                const response = await fetch('/api/logs?limit=1000');
+                const data = await response.json();
+                
+                const csv = convertToCSV(data);
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'phishing_logs_' + new Date().toISOString().split('T')[0] + '.csv');
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification('데이터 내보내기 완료', 'success');
+            } catch (error) {
+                console.error('데이터 내보내기 실패:', error);
+                showNotification('데이터 내보내기 실패', 'error');
+            }
+        }
+
+        // CSV 변환 함수
+        function convertToCSV(data) {
+            const headers = ['시간', 'IP', 'URL 수', '평균 위험도'];
+            const rows = data.map(function(row) {
+                return [
+                    new Date(row.timestamp).toLocaleString('ko-KR'),
+                    row.client_ip,
+                    row.url_count || 0,
+                    Math.round(row.avg_risk_level || 0)
+                ];
+            });
+            
+            const csvContent = [headers.join(',')]
+                .concat(rows.map(function(row) { return row.join(','); }))
+                .join('\n');
+            
+            return '\uFEFF' + csvContent;
+        }
+
+        // 자동 새로고침 설정
+        function setupAutoRefresh() {
+            const checkbox = document.getElementById('auto-refresh');
+            
+            checkbox.addEventListener('change', function(e) {
+                if (e.target.checked) {
+                    startAutoRefresh();
+                } else {
+                    stopAutoRefresh();
+                }
+            });
+            
+            if (checkbox.checked) {
+                startAutoRefresh();
+            }
+        }
+
+        // 자동 새로고침 시작
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(function() {
+                loadStatistics();
+                loadLogs();
+                loadReports();
+            }, 30000);
+        }
+
+        // 자동 새로고침 중지
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        // 국가 옵션 로드
+        async function loadCountryOptions() {
+            try {
+                const response = await fetch('/api/statistics');
+                const stats = await response.json();
+                
+                if (stats.by_country && stats.by_country.length > 0) {
+                    const select = document.getElementById('country-filter');
+                    const currentOptions = ['', '대한민국', '알수없음'];
+                    
+                    stats.by_country.forEach(function(country) {
+                        if (!currentOptions.includes(country.country)) {
+                            const option = document.createElement('option');
+                            option.value = country.country;
+                            option.textContent = country.country;
+                            select.appendChild(option);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('국가 옵션 로드 실패:', error);
+            }
+        }
+
+        // 알림 표시
+        function showNotification(message, type) {
+            type = type || 'info';
+            
+            const notification = document.createElement('div');
+            let bgColor = 'bg-blue-600';
+            if (type === 'success') bgColor = 'bg-green-600';
+            else if (type === 'error') bgColor = 'bg-red-600';
+            
+            notification.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white transition-all duration-300 z-50 ' + bgColor;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(function() {
+                notification.style.opacity = '0';
+                setTimeout(function() {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+                // 키보드 단축키
+                document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeCleanupModal();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('search-input').focus();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                loadStatistics();
+                loadLogs();
+                loadReports();
+                showNotification('새로고침 완료', 'success');
+            }
+        });
+
+        // 페이지 언로드 시 정리
+        window.addEventListener('beforeunload', function() {
+            stopAutoRefresh();
+        });
+
+        // 로그 로드
+        async function loadLogs(append = false) {
+            try {
+                const response = await fetch('/api/logs?limit=20');
+                const logs = await response.json();
+                
+                const tbody = document.getElementById('logs-tbody');
+                if (!append) {
+                    tbody.innerHTML = '';
+                    currentOffset = 0;
+                }
+                
+                if (logs.length === 0 && !append) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">로그가 없습니다.</td></tr>';
+                    return;
+                }
+                
+                logs.forEach(function(log) {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 cursor-pointer';
+                    tr.onclick = function() { showDetail(log.id); };
+                    
+                    const avgRisk = Math.round(log.avg_risk_level || 0);
+                    let riskClass = 'text-green-600';
+                    if (avgRisk >= 70) riskClass = 'text-red-600';
+                    else if (avgRisk >= 40) riskClass = 'text-yellow-600';
+                    
+                    const logDate = new Date(log.timestamp).toLocaleString('ko-KR');
+                    
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${logDate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.client_ip}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.url_count || 0}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${riskClass}">${avgRisk}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
+                            <button class="hover:underline">보기</button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(tr);
+                });
+                
+                currentOffset += logs.length;
+                document.getElementById('log-count').textContent = currentOffset + '개 표시 중';
+            } catch (error) {
+                console.error('로그 로드 실패:', error);
+                showNotification('로그 로드 실패', 'error');
+            }
+        }
+
+        // 더 많은 로그 로드
+        function loadMoreLogs() {
+            loadLogs(true);
+        }
+
+        // 차트 초기화
+        function initCharts() {
+            // 위험도 분포 차트
+            const riskCtx = document.getElementById('risk-chart').getContext('2d');
+            riskChart = new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['고위험', '중위험', '저위험'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#DC2626', '#F59E0B', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 국가별 분포 차트
+            const countryCtx = document.getElementById('country-chart').getContext('2d');
+            countryChart = new Chart(countryCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'URL 수',
+                        data: [],
+                        backgroundColor: '#3B82F6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // 시간별 차트
+            const hourlyCtx = document.getElementById('hourly-chart').getContext('2d');
+            hourlyChart = new Chart(hourlyCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '검사 수',
+                        data: [],
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // 차트 업데이트
+        function updateCharts(stats) {
+            if (riskChart && stats.overall) {
+                riskChart.data.datasets[0].data = [
+                    stats.overall.high_risk_urls || 0,
+                    stats.overall.medium_risk_urls || 0,
+                    stats.overall.low_risk_urls || 0
+                ];
+                riskChart.update();
+            }
+
+            if (countryChart && stats.by_country) {
+                countryChart.data.labels = stats.by_country.map(function(c) { return c.country; });
+                countryChart.data.datasets[0].data = stats.by_country.map(function(c) { return c.count; });
+                countryChart.update();
+            }
+
+            if (hourlyChart && stats.hourly) {
+                hourlyChart.data.labels = stats.hourly.map(function(h) {
+                    const date = new Date(h.hour);
+                    return date.getHours() + '시';
+                });
+                hourlyChart.data.datasets[0].data = stats.hourly.map(function(h) { return h.check_count; });
+                hourlyChart.update();
+            }
+        }
+
+        // 검색 기능
+        // document.getElementById('log-count').textContent 부분을 수정하고 나머지 필요한 함수들을 추가
+
+        // 로그 검색 함수 수정
+        async function searchLogs() {
+            const searchTerm = document.getElementById('search-input').value;
+            const riskLevel = document.getElementById('risk-filter').value;
+            const country = document.getElementById('country-filter').value;
+            const date = document.getElementById('date-filter').value;
+            
+            try {
+                let url = '/api/search?';
+                if (searchTerm) url += 'q=' + encodeURIComponent(searchTerm) + '&';
+                if (riskLevel) url += 'risk_level=' + riskLevel + '&';
+                if (country) url += 'country=' + encodeURIComponent(country) + '&';
+                if (date) url += 'date=' + encodeURIComponent(date);
+                
+                const response = await fetch(url);
+                const results = await response.json();
+                
+                const tbody = document.getElementById('logs-tbody');
+                tbody.innerHTML = '';
+                
+                if (results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">검색 결과가 없습니다.</td></tr>';
+                    document.getElementById('log-count').textContent = '0개 표시 중';
+                    return;
+                }
+                
+                results.forEach(function(log) {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 cursor-pointer';
+                    tr.onclick = function() { showDetail(log.id); };
+                    
+                    const avgRisk = Math.round(log.risk_level || 0);
+                    let riskClass = 'text-green-600';
+                    if (avgRisk >= 70) riskClass = 'text-red-600';
+                    else if (avgRisk >= 40) riskClass = 'text-yellow-600';
+                    
+                    const logDate = new Date(log.timestamp).toLocaleString('ko-KR');
+                    
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${logDate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.client_ip}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${log.url}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${riskClass}">${avgRisk}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
+                            <button class="hover:underline">보기</button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(tr);
+                });
+                
+                document.getElementById('log-count').textContent = `${results.length}개 표시 중`;
+                showNotification('검색 완료', 'success');
+            } catch (error) {
+                console.error('검색 실패:', error);
+                showNotification('검색 실패', 'error');
+            }
+        }
+
+        // 차트 업데이트 함수 수정
+        function updateCharts(stats) {
+            if (riskChart && stats.overall) {
+                const riskData = [
+                    stats.overall.high_risk_urls || 0,
+                    stats.overall.medium_risk_urls || 0,
+                    stats.overall.low_risk_urls || 0
+                ];
+                
+                riskChart.data.datasets[0].data = riskData;
+                riskChart.update();
+            }
+
+            if (countryChart && stats.by_country) {
+                const countryData = stats.by_country.map(c => ({
+                    country: c.country,
+                    count: c.count,
+                    avgRisk: Math.round(c.avg_risk || 0)
+                }));
+                
+                countryChart.data.labels = countryData.map(c => c.country);
+                countryChart.data.datasets[0].data = countryData.map(c => c.count);
+                countryChart.update();
+            }
+
+            if (hourlyChart && stats.hourly) {
+                const hourlyData = stats.hourly.map(h => ({
+                    hour: new Date(h.hour).getHours(),
+                    count: h.check_count
+                }));
+                
+                hourlyChart.data.labels = hourlyData.map(h => `${h.hour}시`);
+                hourlyChart.data.datasets[0].data = hourlyData.map(h => h.count);
+                hourlyChart.update();
+            }
+        }
+
+        // 제보 상태 업데이트 함수 수정
+        async function updateReportStatus(reportId) {
+            const statusSelect = document.createElement('select');
+            statusSelect.className = 'px-2 py-1 border rounded text-sm';
+            statusSelect.innerHTML = `
+                <option value="pending">대기중</option>
+                <option value="reviewed">검토됨</option>
+                <option value="processed">처리됨</option>
+            `;
+            
+            const adminNotesInput = document.createElement('input');
+            adminNotesInput.type = 'text';
+            adminNotesInput.placeholder = '관리자 메모';
+            adminNotesInput.className = 'px-2 py-1 border rounded text-sm ml-2';
+            
+            const container = document.createElement('div');
+            container.className = 'flex items-center space-x-2';
+            container.appendChild(statusSelect);
+            container.appendChild(adminNotesInput);
+            
+            const result = await new Promise(resolve => {
+                showCustomModal('제보 상태 변경', container, () => {
+                    resolve({
+                        status: statusSelect.value,
+                        adminNotes: adminNotesInput.value
+                    });
+                });
+            });
+            
+            if (!result) return;
+            
+            try {
+                const response = await fetch(`/api/reports/${reportId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: result.status,
+                        admin_notes: result.adminNotes
+                    })
+                });
+                
+                if (response.ok) {
+                    showNotification('상태가 업데이트되었습니다.', 'success');
+                    loadReports();
+                } else {
+                    showNotification('상태 업데이트 실패', 'error');
+                }
+            } catch (error) {
+                console.error('상태 업데이트 실패:', error);
+                showNotification('상태 업데이트 실패', 'error');
+            }
+        }
+
+        // 커스텀 모달 함수 추가
+        function showCustomModal(title, content, onConfirm) {
+            const modalHtml = `
+                <div class="fixed inset-0 z-50 overflow-y-auto">
+                    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+                        <div class="fixed inset-0 transition-opacity">
+                            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                        </div>
+                        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">${title}</h3>
+                                <div id="custom-modal-content"></div>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button id="custom-modal-confirm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                                    확인
+                                </button>
+                                <button id="custom-modal-cancel" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                    취소
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = modalHtml;
+            document.body.appendChild(modalContainer);
+            
+            const contentContainer = modalContainer.querySelector('#custom-modal-content');
+            contentContainer.appendChild(content);
+            
+            const confirmButton = modalContainer.querySelector('#custom-modal-confirm');
+            const cancelButton = modalContainer.querySelector('#custom-modal-cancel');
+            
+            confirmButton.onclick = () => {
+                onConfirm();
+                document.body.removeChild(modalContainer);
+            };
+            
+            cancelButton.onclick = () => {
+                document.body.removeChild(modalContainer);
+            };
+        }
+    </script>

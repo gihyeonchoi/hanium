@@ -4,22 +4,35 @@
 # sys.executable
 import csv
 from urllib.parse import urlparse
+import re
 
 def URL_parsing(text):
-    '''
-    메시지를 가져와 url만 파싱. list로 리턴
-    - http, https 포함된 URL
-    - www. 또는 스킴 없는 도메인 (예: naver.com)
-    '''
-    import re
+    """
+    메시지에서 URL만 추출 (스킴 없음, user@host 포함)
+    - http, https 스킴
+    - 스킴 없는 도메인
+    - user@host 피싱 케이스
+    """
+    print(f"텍스트 : {text}")
 
-    # http(s):// 로 시작하는 것 + www. 또는 도메인 형태도 추출
-    url_pattern = r'(https?://[^\s]+|(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?)'
-    
+    # 스킴 포함: http://, https://
+    # user:pass@host 포맷도 포함되도록 [^\s]+
+    scheme_pattern = r'https?://[^\s]+'
+
+    # 스킴 없는 but user@host 피싱용: [domain]@[something]
+    user_at_host_pattern = r'[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}@[^\s/]+'
+
+    # 일반 스킴 없는 도메인 + 선택적 경로
+    bare_domain_pattern = r'(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?'
+
+    # 3개 패턴 조합
+    url_pattern = f'({scheme_pattern}|{user_at_host_pattern}|{bare_domain_pattern})'
+
     urls = re.findall(url_pattern, text)
-    print("검색한 url :", urls)
-    return list(set(urls))  # 중복 제거
+    urls = list(set(urls))  # 중복 제거
 
+    print("검색한 URL:", urls)
+    return urls
 
 def URL_check(url):
     '''
@@ -208,21 +221,156 @@ def Additional_risk(url):
     URL 문자열에서 추가적인 위험 요소 탐지
     - "//"가 URL 경로 중간에 여러 번 등장할 경우
     - "@" 심볼이 포함된 경우 (피싱 URL에 종종 사용됨)
+    - XSS 공격 패턴 탐지
+    - Open Redirect 패턴 탐지
     
-    리턴: 탐지된 위험 요소 메시지 리스트
+    리턴: 위험도 점수, 탐지된 위험 요소 메시지 리스트
     '''
+    import re
+    from urllib.parse import urlparse, parse_qs, unquote
+    
     risk_messages = []
     risk_level = 0
-
+    
+    # URL 디코딩 (인코딩된 악성 패턴 탐지를 위해)
+    decoded_url = unquote(url.lower())
+    print(f"Additional_risk url : {url}")
+    # 1. 기존 패턴 검사
     # 중간에 //가 1번 이상 반복되는 경우 (단, 시작의 https:// 제외)
     if url.count('//') > 1:
-        risk_messages.append('⚠️ URL에 비정상적인 리다이렉션 경로가 포함되어 있습니다.')
-        risk_level += 40
-        
-
+        risk_messages.append('🚨 URL에 비정상적인 리다이렉션 경로(//)가 포함되어 있습니다.')
+        risk_level += 60
+    
     # @ 기호 포함 여부
     if '@' in url:
-        risk_messages.append('⚠️ URL에 비정상적인 서버 정보(@심볼)가 포함되어 있습니다.')
-        risk_level += 40
-
+        risk_messages.append('🚨 URL에 비정상적인 인증 우회(@)가 포함되어 있습니다.')
+        risk_level += 60
+    
+    # 2. Open Redirect 패턴 검사
+    open_redirect_params = [
+        'url', 'redirect', 'return', 'next', 'goto', 'target', 'destination',
+        'redir', 'redirect_url', 'return_url', 'go', 'out', 'link', 'continue',
+        'site', 'view', 'to', 'ref', 'jump', 'jumpto', 'forward', 'dest'
+    ]
+    
+    try:
+        parsed = urlparse(url)
+        params = parse_qs(parsed.query.lower())
+        
+        for param in open_redirect_params:
+            if param in params:
+                param_value = params[param][0] if params[param] else ''
+                # 외부 URL로 리다이렉트하는 패턴 검사
+                if any(pattern in param_value for pattern in ['http://', 'https://', 'ftp://', '//']):
+                    risk_messages.append(f'🚨 Open Redirect 취약점이 발견되었습니다 ({param})')
+                    risk_level = 100  # Open Redirect는 매우 위험
+                    break
+    except:
+        pass
+    
+    # 3. XSS 공격 패턴 검사
+    xss_patterns = [
+        r'<script[^>]*>',  # <script> 태그
+        r'javascript:',     # javascript: 프로토콜
+        r'onerror\s*=',    # onerror 이벤트
+        r'onclick\s*=',    # onclick 이벤트
+        r'onload\s*=',     # onload 이벤트
+        r'onmouseover\s*=', # onmouseover 이벤트
+        r'<iframe[^>]*>',  # iframe 태그
+        r'<img[^>]*onerror', # img 태그와 onerror
+        r'alert\s*\(',     # alert 함수
+        r'eval\s*\(',      # eval 함수
+        r'expression\s*\(', # CSS expression
+        r'vbscript:',      # vbscript 프로토콜
+        r'data:.*base64',  # data URL scheme
+        r'<svg[^>]*onload', # SVG 태그
+        r'&#x[0-9a-fA-F]+;', # 16진수 HTML 엔티티
+        r'&#[0-9]+;',      # 10진수 HTML 엔티티
+        r'document\.cookie', # 쿠키 접근
+        r'window\.location', # 위치 변경
+        r'<object[^>]*>',  # object 태그
+        r'<embed[^>]*>',   # embed 태그
+    ]
+    
+    for pattern in xss_patterns:
+        if re.search(pattern, decoded_url, re.IGNORECASE):
+            risk_messages.append(f'🚨 XSS 공격 패턴이 발견되었습니다: {pattern}')
+            risk_level = 100  # XSS는 매우 위험
+            break
+    
+    # 4. 동형 문자 공격 (Homograph Attack) 검사 - 키릴 문자 등
+    # 영어처럼 보이지만 실제로는 다른 문자인 경우 탐지
+    cyrillic_chars = {
+        'а': 'a', 'е': 'e', 'о': 'o', 'р': 'p', 'с': 'c', 'у': 'y', 'х': 'x',
+        'А': 'A', 'В': 'B', 'Е': 'E', 'К': 'K', 'М': 'M', 'Н': 'H', 'О': 'O', 
+        'Р': 'P', 'С': 'C', 'Т': 'T', 'У': 'Y', 'Х': 'X'
+    }
+    
+    # 그리스 문자
+    greek_chars = {
+        'α': 'a', 'ο': 'o', 'ν': 'v', 'τ': 't', 'ρ': 'p', 'μ': 'u',
+        'Α': 'A', 'Β': 'B', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Ι': 'I', 
+        'Κ': 'K', 'Μ': 'M', 'Ν': 'N', 'Ο': 'O', 'Ρ': 'P', 'Τ': 'T', 'Υ': 'Y', 'Χ': 'X'
+    }
+    
+    # 기타 유사 문자 (라틴 확장 등)
+    lookalike_chars = {
+        'ɑ': 'a', 'ϲ': 'c', 'ԁ': 'd', 'ҽ': 'e', 'ց': 'g', 'һ': 'h', 'і': 'i',
+        'ј': 'j', 'ӏ': 'l', 'ո': 'n', 'օ': 'o', 'ք': 'q', 'ѕ': 's', 'ս': 'u',
+        'ѵ': 'v', 'ԝ': 'w', 'х': 'x', 'у': 'y', 'ᴢ': 'z'
+    }
+    
+    # 도메인 부분 추출
+    try:
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower()
+        
+        # 동형 문자 탐지
+        homograph_found = False
+        found_chars = []
+        
+        for char in domain:
+            if char in cyrillic_chars:
+                found_chars.append(f'{char}(키릴문자→{cyrillic_chars[char]})')
+                homograph_found = True
+            elif char in greek_chars:
+                found_chars.append(f'{char}(그리스문자→{greek_chars[char]})')
+                homograph_found = True
+            elif char in lookalike_chars:
+                found_chars.append(f'{char}(유사문자→{lookalike_chars[char]})')
+                homograph_found = True
+        
+        if homograph_found:
+            risk_messages.append(f'🚨 도메인에 영어로 위장한 문자가 포함되어 있습니다: {", ".join(found_chars[:3])}{"..." if len(found_chars) > 3 else ""}')
+            risk_level = 100
+    except:
+        pass
+    
+    # 5. 추가 의심스러운 패턴 검사
+    suspicious_patterns = [
+        (r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', 'IP 주소가 직접 사용됨'),
+        (r'(bit\.ly|tinyurl|goo\.gl|short\.link)', '단축 URL 서비스 사용'),
+        (r'[0-9a-f]{32,}', '의심스러운 해시값 포함'),
+        (r'\.tk|\.ml|\.ga|\.cf', '무료 도메인 사용'),
+        (r'(%[0-9a-fA-F]{2}){5,}', '과도한 URL 인코딩'),
+    ]
+    
+    for pattern, message in suspicious_patterns:
+        if re.search(pattern, url, re.IGNORECASE):
+            risk_messages.append(f'⚠️ {message}')
+            risk_level += 20
+    
+    # 6. 다중 리다이렉션 체인 검사
+    redirect_count = len(re.findall(r'(https?://|ftp://|//)', decoded_url))
+    if redirect_count > 2:  # 프로토콜 포함해서 2개 이상
+        risk_messages.append(f'🚨 다중 리다이렉션이 감지되었습니다 ({redirect_count}개의 URL)')
+        risk_level = 100
+    
+    # 위험도 최대값 제한
+    risk_level = min(100, risk_level)
+    
+    # 위험도가 100인 경우 확정 메시지 추가
+    if risk_level == 100 and not any('피싱 확정' in msg for msg in risk_messages):
+        risk_messages.insert(0, '🚨 이 URL은 피싱 사이트일 가능성이 매우 높습니다!')
+    
     return risk_level, risk_messages
