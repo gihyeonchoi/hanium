@@ -1,7 +1,14 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import json
 from contextlib import contextmanager
+
+# 한국 시간대 설정
+KST = timezone(timedelta(hours=9))
+
+def get_kst_now():
+    """현재 한국 시간 반환"""
+    return datetime.now(KST).strftime('%Y-%m-%d %H:%M:%S')
 
 class DatabaseManager:
     def __init__(self, db_path='phishing_logs.db'):
@@ -141,9 +148,9 @@ class DatabaseManager:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO phishing_logs (client_ip, original_message)
-                VALUES (?, ?)
-            ''', (client_ip, original_message))
+                INSERT INTO phishing_logs (client_ip, original_message, timestamp, created_at)
+                VALUES (?, ?, ?, ?)
+            ''', (client_ip, original_message, get_kst_now(), get_kst_now()))
             return cursor.lastrowid
     
     def add_url_check_result(self, log_id, url, url_check, ssl_check, domain_days, 
@@ -154,12 +161,13 @@ class DatabaseManager:
             cursor.execute('''
                 INSERT INTO url_checks 
                 (log_id, url, url_check, ssl_check, domain_days, country, 
-                 risk_level, risk_messages, additional_risks)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 risk_level, risk_messages, additional_risks, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 log_id, url, url_check, ssl_check, domain_days, country,
                 risk_level, json.dumps(risk_messages, ensure_ascii=False),
-                json.dumps(additional_risks, ensure_ascii=False) if additional_risks else None
+                json.dumps(additional_risks, ensure_ascii=False) if additional_risks else None,
+                get_kst_now()
             ))
     
     def add_ml_features(self, log_id, url, features):
@@ -167,10 +175,13 @@ class DatabaseManager:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             
+            # created_at 추가
+            features_with_time = features.copy()
+            
             # 피처 딕셔너리를 SQL 쿼리로 변환
-            columns = ', '.join(features.keys())
-            placeholders = ', '.join('?' * len(features))
-            values = list(features.values())
+            columns = ', '.join(features_with_time.keys()) + ', created_at'
+            placeholders = ', '.join('?' * len(features_with_time)) + ', ?'
+            values = list(features_with_time.values()) + [get_kst_now()]
             
             # log_id와 url 추가
             columns = f'log_id, url, {columns}'
@@ -347,10 +358,10 @@ class DatabaseManager:
                     strftime('%Y-%m-%d %H:00:00', timestamp) as hour,
                     COUNT(*) as check_count
                 FROM phishing_logs
-                WHERE timestamp >= datetime('now', '-24 hours')
+                WHERE timestamp >= datetime(?, '-24 hours')
                 GROUP BY hour
                 ORDER BY hour
-            ''')
+            ''', (get_kst_now(),))
             hourly_stats = [dict(row) for row in cursor.fetchall()]
             
             # ML 피처 통계 추가
@@ -405,10 +416,11 @@ class DatabaseManager:
         """오래된 로그 정리"""
         with self.get_connection() as conn:
             cursor = conn.cursor()
+            cutoff_date = (datetime.now(KST) - timedelta(days=days)).strftime('%Y-%m-%d %H:%M:%S')
             cursor.execute('''
                 DELETE FROM phishing_logs 
-                WHERE timestamp < datetime('now', '-' || ? || ' days')
-            ''', (days,))
+                WHERE timestamp < ?
+            ''', (cutoff_date,))
             
             return cursor.rowcount
     
@@ -417,9 +429,9 @@ class DatabaseManager:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO phishing_reports (client_ip, message_or_url, reason)
-                VALUES (?, ?, ?)
-            ''', (client_ip, message_or_url, reason))
+                INSERT INTO phishing_reports (client_ip, message_or_url, reason, created_at)
+                VALUES (?, ?, ?, ?)
+            ''', (client_ip, message_or_url, reason, get_kst_now()))
             return cursor.lastrowid
     
     def get_reports(self, status=None, limit=100):
@@ -449,7 +461,7 @@ class DatabaseManager:
             cursor = conn.cursor()
             cursor.execute('''
                 UPDATE phishing_reports 
-                SET status = ?, admin_notes = ?, reviewed_at = CURRENT_TIMESTAMP
+                SET status = ?, admin_notes = ?, reviewed_at = ?
                 WHERE id = ?
-            ''', (status, admin_notes, report_id))
+            ''', (status, admin_notes, get_kst_now(), report_id))
             return cursor.rowcount > 0

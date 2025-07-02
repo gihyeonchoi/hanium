@@ -3,17 +3,20 @@ from pishing_check import URL_parsing, URL_check, SSL_check, Domain_check, Locat
 from database import DatabaseManager
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 from functools import wraps
 import os
+
+# 한국 시간대 설정
+KST = timezone(timedelta(hours=9))
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-in-production')
 db = DatabaseManager()  # 데이터베이스 매니저 인스턴스 생성
 
 # 관리자 비밀번호 (실제 운영 환경에서는 환경 변수로 설정)
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'vhfflxpr1')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin1234')
 
 def require_password(f):
     """비밀번호 인증이 필요한 라우트를 위한 데코레이터"""
@@ -208,11 +211,6 @@ def analyze():
             # 위험도 평가 (화면 표시용)
             risk_score = 0
             risk_messages = []
-            
-            # 추가 서버 정보 평가
-            if additional_risk_msg:
-                risk_score += additional_risk_score
-                risk_messages.extend(additional_risk_msg)
                 
             # URL 대조 결과 평가
             if not url_check:
@@ -242,10 +240,19 @@ def analyze():
             elif country == "알수없음":
                 risk_score += 20
                 risk_messages.append("서버 위치를 확인할 수 없습니다.")
-            
+                    # 추가 서버 정보 평가
+
+            # DB에 등록된 서버는 무조건 위 4개 항목에서는 안전
+            if "데이터베이스에 등록되지 않은 도메인입니다." not in risk_messages:
+                risk_score = 0
+
+            if additional_risk_msg:
+                risk_score += additional_risk_score
+                risk_messages.extend(additional_risk_msg)
+
             if not risk_messages:
                 risk_messages.append("해당 사이트는 안전합니다.")
-
+                
             # 위험도 레벨 계산 (화면 표시용, 0-100으로 제한)
             risk_level_display = min(100, risk_score)
             
